@@ -39,7 +39,7 @@ export default async function SearchPage({
         </Link>
         <div>
           <h1 className="text-xl font-bold">Search Results</h1>
-          <p className="text-blue-200 text-sm">"{query}" కోసం శోధన</p>
+          <p className="text-blue-200 text-sm">&quot;{query}&quot; కోసం శోధన</p>
         </div>
       </div>
 
@@ -74,6 +74,7 @@ export default async function SearchPage({
                   )}
                 </div>
                 <p className="text-sm text-gray-600 font-medium">
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   {worker.categories?.map((c: any) => c.nameEnglish).join(", ")}
                 </p>
                 <p className="text-sm text-gray-500 mb-1">{worker.experienceYears} Years (అనుభవం)</p>

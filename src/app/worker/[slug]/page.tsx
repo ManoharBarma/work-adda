@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { getWorkerBySlug } from "@/app/actions/worker";
 
 export default function WorkerProfilePage({ params }: { params: { slug: string } }) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [worker, setWorker] = useState<any>(null);
 
   useEffect(() => {
@@ -14,10 +15,12 @@ export default function WorkerProfilePage({ params }: { params: { slug: string }
           id: data.id,
           name: data.fullName,
           phone: data.phone,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           category: data.categories?.map((c: any) => c.nameEnglish).join(", "),
           experience: `${data.experienceYears} Years`,
           locality: `${data.locality.nameEnglish} (${data.locality.nameTelugu})`,
           profileViews: data.profileViews,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           skills: data.skills?.map((ws: any) => ws.skill.nameEnglish) || [], 
           about: data.bio || "No bio available. (బయో అందుబాటులో లేదు)",
           categorySlug: data.categories?.[0]?.slug || ""
@@ -44,6 +47,7 @@ export default function WorkerProfilePage({ params }: { params: { slug: string }
     if (worker) {
       trackIntent('VIEW');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [worker?.id]);
 
   if (!worker) return <div className="p-8 text-center text-gray-500">Loading (లోడ్ అవుతోంది)...</div>;
