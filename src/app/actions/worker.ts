@@ -134,7 +134,9 @@ export async function adminRegisterWorker(formData: FormData) {
   const fullNameTelugu = formData.get("fullNameTelugu") as string;
   const phone = formData.get("phone") as string;
   const categorySlugs = formData.getAll("category") as string[]; 
-  const localityId = formData.get("locality") as string;
+  let localityId = formData.get("locality") as string;
+  const customLocality = formData.get("customLocality") as string;
+  const customLocalityTelugu = formData.get("customLocalityTelugu") as string;
   const experienceYears = parseInt(formData.get("experience") as string) || 0;
   const whatsappPhone = (formData.get("whatsappPhone") as string) || phone;
   const bio = (formData.get("bio") as string) || null;
@@ -152,6 +154,22 @@ export async function adminRegisterWorker(formData: FormData) {
   });
 
   try {
+    // Handle Custom Locality creation
+    if (customLocality && customLocalityTelugu) {
+      let newLoc = await prisma.locality.findFirst({ where: { nameEnglish: customLocality } });
+      if (!newLoc) {
+        newLoc = await prisma.locality.create({
+          data: {
+            nameEnglish: customLocality,
+            nameTelugu: customLocalityTelugu,
+            town: "Sircilla",
+            district: "Rajanna Sircilla"
+          }
+        });
+      }
+      localityId = newLoc.id;
+    }
+
     const worker = await prisma.worker.create({
       data: {
         fullName,
@@ -185,7 +203,9 @@ export async function registerWorker(formData: FormData) {
   const fullNameTelugu = formData.get("fullNameTelugu") as string;
   const phone = formData.get("phone") as string;
   const categorySlugs = formData.getAll("category") as string[]; // Can be multiple now
-  const localityId = formData.get("locality") as string;
+  let localityId = formData.get("locality") as string;
+  const customLocality = formData.get("customLocality") as string;
+  const customLocalityTelugu = formData.get("customLocalityTelugu") as string;
   const experienceYears = parseInt(formData.get("experience") as string) || 0;
   const whatsappPhone = (formData.get("whatsappPhone") as string) || phone;
   const bio = (formData.get("bio") as string) || null;
@@ -206,6 +226,23 @@ export async function registerWorker(formData: FormData) {
   if (selectedCategories.length === 0) throw new Error("Categories not found");
 
   try {
+    // Handle Custom Locality creation
+    if (customLocality && customLocalityTelugu) {
+      // Find exact match first to prevent duplicates
+      let newLoc = await prisma.locality.findFirst({ where: { nameEnglish: customLocality } });
+      if (!newLoc) {
+        newLoc = await prisma.locality.create({
+          data: {
+            nameEnglish: customLocality,
+            nameTelugu: customLocalityTelugu,
+            town: "Sircilla",
+            district: "Rajanna Sircilla"
+          }
+        });
+      }
+      localityId = newLoc.id;
+    }
+
     // Create worker
     const worker = await prisma.worker.create({
       data: {

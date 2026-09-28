@@ -11,15 +11,20 @@ export default function RegisterForm({ categories, localities }: { categories: a
 
   const [fullName, setFullName] = useState("");
   const [fullNameTelugu, setFullNameTelugu] = useState("");
+  
+  const [selectedLocalityId, setSelectedLocalityId] = useState("");
+  const [customLocality, setCustomLocality] = useState("");
+  const [customLocalityTelugu, setCustomLocalityTelugu] = useState("");
 
-  const handleNameBlur = async () => {
-    if (!fullName.trim()) return;
+  const isOtherLocality = localities.find(l => l.id === selectedLocalityId)?.nameEnglish === "Other (Not Listed)";
+
+  const handleNameBlur = async (text: string, setter: (val: string) => void) => {
+    if (!text.trim()) return;
     try {
-      const response = await fetch(`https://inputtools.google.com/request?text=${encodeURIComponent(fullName)}&itc=te-t-i0-und&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8`);
+      const response = await fetch(`https://inputtools.google.com/request?text=${encodeURIComponent(text)}&itc=te-t-i0-und&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8`);
       const data = await response.json();
       if (data[0] === 'SUCCESS') {
-        const translated = data[1][0][1][0];
-        setFullNameTelugu(translated);
+        setter(data[1][0][1][0]);
       }
     } catch (err) {
       console.error("Translation error", err);
@@ -88,7 +93,7 @@ export default function RegisterForm({ categories, localities }: { categories: a
               type="text" 
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              onBlur={handleNameBlur}
+              onBlur={() => handleNameBlur(fullName, setFullNameTelugu)}
               placeholder="ex: Raju" 
               className="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500" 
             />
@@ -141,13 +146,49 @@ export default function RegisterForm({ categories, localities }: { categories: a
           </div>
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">Locality (ప్రాంతం) *</label>
-            <select name="locality" required className="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+            <select 
+              name="locality" 
+              required 
+              value={selectedLocalityId}
+              onChange={(e) => setSelectedLocalityId(e.target.value)}
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+            >
               <option value="">Select your area...</option>
               {localities.map(l => (
                 <option key={l.id} value={l.id}>{l.nameEnglish} ({l.nameTelugu})</option>
               ))}
             </select>
           </div>
+          
+          {isOtherLocality && (
+            <div className="p-4 bg-orange-50 border border-orange-100 rounded-xl space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Type your Area Name (మీ ప్రాంతం పేరు) *</label>
+                <input 
+                  name="customLocality" 
+                  type="text" 
+                  required={isOtherLocality}
+                  value={customLocality}
+                  onChange={(e) => setCustomLocality(e.target.value)}
+                  onBlur={() => handleNameBlur(customLocality, setCustomLocalityTelugu)}
+                  placeholder="ex: Gandhinagar" 
+                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white" 
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Telugu Area Name (తెలుగులో) *</label>
+                <input 
+                  name="customLocalityTelugu" 
+                  type="text" 
+                  required={isOtherLocality}
+                  value={customLocalityTelugu}
+                  onChange={(e) => setCustomLocalityTelugu(e.target.value)}
+                  placeholder="ex: గాంధీనగర్" 
+                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-orange-500 bg-gray-50" 
+                />
+              </div>
+            </div>
+          )}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">Years of Experience (అనుభవం)</label>
             <input name="experience" type="number" placeholder="ex: 5" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500" />

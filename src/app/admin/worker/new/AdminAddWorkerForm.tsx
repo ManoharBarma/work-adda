@@ -11,15 +11,20 @@ export default function AdminAddWorkerForm({ categories, localities }: { categor
 
   const [fullName, setFullName] = useState("");
   const [fullNameTelugu, setFullNameTelugu] = useState("");
+  
+  const [selectedLocalityId, setSelectedLocalityId] = useState("");
+  const [customLocality, setCustomLocality] = useState("");
+  const [customLocalityTelugu, setCustomLocalityTelugu] = useState("");
 
-  const handleNameBlur = async () => {
-    if (!fullName.trim()) return;
+  const isOtherLocality = localities.find(l => l.id === selectedLocalityId)?.nameEnglish === "Other (Not Listed)";
+
+  const handleNameBlur = async (text: string, setter: (val: string) => void) => {
+    if (!text.trim()) return;
     try {
-      const response = await fetch(`https://inputtools.google.com/request?text=${encodeURIComponent(fullName)}&itc=te-t-i0-und&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8`);
+      const response = await fetch(`https://inputtools.google.com/request?text=${encodeURIComponent(text)}&itc=te-t-i0-und&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8`);
       const data = await response.json();
       if (data[0] === 'SUCCESS') {
-        const translated = data[1][0][1][0];
-        setFullNameTelugu(translated);
+        setter(data[1][0][1][0]);
       }
     } catch (err) {
       console.error("Translation error", err);
@@ -68,7 +73,7 @@ export default function AdminAddWorkerForm({ categories, localities }: { categor
             required 
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            onBlur={handleNameBlur}
+            onBlur={() => handleNameBlur(fullName, setFullNameTelugu)}
             className="w-full border border-slate-300 p-2 rounded-lg" 
           />
         </div>
@@ -110,7 +115,14 @@ export default function AdminAddWorkerForm({ categories, localities }: { categor
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1">Locality</label>
-          <select name="locality" required className="w-full border border-slate-300 p-2 rounded-lg">
+          <select 
+            name="locality" 
+            required 
+            value={selectedLocalityId}
+            onChange={(e) => setSelectedLocalityId(e.target.value)}
+            className="w-full border border-slate-300 p-2 rounded-lg"
+          >
+            <option value="">Select Locality...</option>
             {localities.map(loc => (
               <option key={loc.id} value={loc.id}>{loc.nameEnglish} ({loc.nameTelugu})</option>
             ))}
@@ -121,6 +133,34 @@ export default function AdminAddWorkerForm({ categories, localities }: { categor
           <input name="experience" type="number" min="0" required className="w-full border border-slate-300 p-2 rounded-lg" />
         </div>
       </div>
+
+      {isOtherLocality && (
+        <div className="grid grid-cols-2 gap-4 bg-orange-50 p-4 rounded-lg border border-orange-100">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Custom Locality (English)</label>
+            <input 
+              name="customLocality" 
+              type="text" 
+              required={isOtherLocality}
+              value={customLocality}
+              onChange={(e) => setCustomLocality(e.target.value)}
+              onBlur={() => handleNameBlur(customLocality, setCustomLocalityTelugu)}
+              className="w-full border border-slate-300 p-2 rounded-lg" 
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Custom Locality (Telugu)</label>
+            <input 
+              name="customLocalityTelugu" 
+              type="text" 
+              required={isOtherLocality}
+              value={customLocalityTelugu}
+              onChange={(e) => setCustomLocalityTelugu(e.target.value)}
+              className="w-full border border-slate-300 p-2 rounded-lg" 
+            />
+          </div>
+        </div>
+      )}
 
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-1">Bio / About (Optional)</label>
