@@ -14,13 +14,13 @@ export default async function Home() {
       {/* Hero Section */}
       <div className="bg-blue-600 text-white px-4 py-12 rounded-b-3xl shadow-md text-center">
         <h1 className="text-3xl font-bold mb-2 tracking-tight">
-          Work Adda Sircilla
+          Work Adda
         </h1>
         <p className="text-blue-100 text-sm mb-6 max-w-xs mx-auto">
-          Find skilled local workers in your area and contact them directly.<br/>
+          Find skilled local workers in your area and contact them directly.<br />
           <span className="text-xs opacity-90 block mt-1">(మీ ప్రాంతంలోని నైపుణ్యం కలిగిన కార్మికులను కనుగొనండి మరియు వారిని నేరుగా సంప్రదించండి.)</span>
         </p>
-        
+
         {/* Search Bar */}
         <form action="/search" method="GET" className="relative max-w-md mx-auto">
           <input
@@ -45,8 +45,8 @@ export default async function Home() {
         <p className="text-sm text-gray-500 mb-4 px-2">వర్గాలను బ్రౌజ్ చేయండి</p>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {categories.map((cat) => (
-            <Link 
-              href={`/category/${cat.slug}`} 
+            <Link
+              href={`/category/${cat.slug}`}
               key={cat.slug}
               className="bg-white border border-gray-100 p-4 rounded-2xl flex flex-col items-center text-center shadow-sm hover:shadow-md transition active:scale-95"
             >
@@ -61,12 +61,12 @@ export default async function Home() {
       {/* Call to Action for Workers */}
       <div className="px-4 mt-12 max-w-lg mx-auto">
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 p-6 rounded-2xl text-center shadow-sm">
-          <h3 className="text-lg font-bold text-gray-800 mb-2">Are you a skilled worker?<br/><span className="text-sm">(మీరు నైపుణ్యం కలిగిన కార్మికులా?)</span></h3>
+          <h3 className="text-lg font-bold text-gray-800 mb-2">Are you a skilled worker?<br /><span className="text-sm">(మీరు నైపుణ్యం కలిగిన కార్మికులా?)</span></h3>
           <p className="text-sm text-gray-600 mb-5">
             Register your profile for free and let local customers contact you directly. No commissions.
           </p>
-          <Link 
-            href="/register" 
+          <Link
+            href="/register"
             className="inline-block w-full bg-indigo-600 text-white py-3 rounded-xl font-medium shadow-md hover:bg-indigo-700 transition active:scale-95"
           >
             Register as Worker — Free
