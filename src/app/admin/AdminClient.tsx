@@ -21,8 +21,8 @@ export default function AdminClient({ initialWorkers, metrics }: { initialWorker
   const handleApprove = (id: string, name: string) => {
     startTransition(async () => {
       await approveWorker(id);
-      setWorkers(prev => prev.map(w => w.id === id ? { ...w, status: "APPROVED", mobileVerified: true } : w));
-      setActiveCount(prev => prev + 1);
+      setWorkers((prev: any[]) => prev.map(w => w.id === id ? { ...w, status: "APPROVED", mobileVerified: true } : w));
+      setActiveCount((prev: number) => prev + 1);
       showMessage(`✅ Approved ${name}!`);
     });
   };
@@ -30,7 +30,7 @@ export default function AdminClient({ initialWorkers, metrics }: { initialWorker
   const handleReject = (id: string, name: string) => {
     startTransition(async () => {
       await rejectWorker(id);
-      setWorkers(prev => prev.map(w => w.id === id ? { ...w, status: "REJECTED" } : w));
+      setWorkers((prev: any[]) => prev.map(w => w.id === id ? { ...w, status: "REJECTED" } : w));
       showMessage(`❌ Rejected ${name}.`);
     });
   };
@@ -39,7 +39,7 @@ export default function AdminClient({ initialWorkers, metrics }: { initialWorker
     if (!confirm(`Are you sure you want to permanently delete ${name}?`)) return;
     startTransition(async () => {
       await deleteWorker(id);
-      setWorkers(prev => prev.filter(w => w.id !== id));
+      setWorkers((prev: any[]) => prev.filter(w => w.id !== id));
       showMessage(`🗑️ Deleted ${name}.`);
     });
   };
