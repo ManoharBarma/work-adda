@@ -127,7 +127,7 @@ export default function WorkerProfilePage({ params }: { params: { slug: string }
         </a>
         
         <a 
-          href={`https://wa.me/${worker.phone.replace(/\\D/g, '').slice(-10)}`}
+          href={`https://wa.me/91${worker.phone.replace(/\\D/g, '').slice(-10)}`}
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => trackIntent('WHATSAPP')}
