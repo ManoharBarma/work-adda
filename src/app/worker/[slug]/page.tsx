@@ -14,6 +14,7 @@ export default function WorkerProfilePage({ params }: { params: { slug: string }
         setWorker({
           id: data.id,
           name: data.fullName,
+          nameTelugu: data.fullNameTelugu,
           phone: data.phone,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           category: data.categories?.map((c: any) => c.nameEnglish).join(", "),
@@ -73,6 +74,7 @@ export default function WorkerProfilePage({ params }: { params: { slug: string }
           {worker.name.charAt(0)}
         </div>
         <h2 className="text-2xl font-bold text-gray-900">{worker.name}</h2>
+        {worker.nameTelugu && <h3 className="text-xl font-bold text-gray-700 mt-1 mb-2">{worker.nameTelugu}</h3>}
         <p className="text-blue-600 font-medium mb-2">{worker.category}</p>
         
         <div className="flex justify-center text-sm text-gray-600 mt-4 mb-5">

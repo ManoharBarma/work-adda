@@ -9,6 +9,23 @@ export default function RegisterForm({ categories, localities }: { categories: a
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
+  const [fullName, setFullName] = useState("");
+  const [fullNameTelugu, setFullNameTelugu] = useState("");
+
+  const handleNameBlur = async () => {
+    if (!fullName.trim()) return;
+    try {
+      const response = await fetch(`https://inputtools.google.com/request?text=${encodeURIComponent(fullName)}&itc=te-t-i0-und&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8`);
+      const data = await response.json();
+      if (data[0] === 'SUCCESS') {
+        const translated = data[1][0][1][0];
+        setFullNameTelugu(translated);
+      }
+    } catch (err) {
+      console.error("Translation error", err);
+    }
+  };
+
   const handleSubmit = async (formData: FormData) => {
     setErrorMsg(null);
     startTransition(async () => {
@@ -64,8 +81,29 @@ export default function RegisterForm({ categories, localities }: { categories: a
           )}
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Full Name (పూర్తి పేరు) *</label>
-            <input name="fullName" required type="text" placeholder="ex: Raju B" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Full Name (ఇంగ్లీష్‌లో పేరు) *</label>
+            <input 
+              name="fullName" 
+              required 
+              type="text" 
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              onBlur={handleNameBlur}
+              placeholder="ex: Raju" 
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500" 
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Telugu Name (తెలుగులో పేరు) *</label>
+            <input 
+              name="fullNameTelugu" 
+              required 
+              type="text" 
+              value={fullNameTelugu}
+              onChange={(e) => setFullNameTelugu(e.target.value)}
+              placeholder="ex: రాజు" 
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50" 
+            />
           </div>
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">Mobile Number (మొబైల్ నంబర్) *</label>

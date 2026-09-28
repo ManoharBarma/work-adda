@@ -9,6 +9,23 @@ export default function AdminAddWorkerForm({ categories, localities }: { categor
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<{ text: string, type: "success" | "error" } | null>(null);
 
+  const [fullName, setFullName] = useState("");
+  const [fullNameTelugu, setFullNameTelugu] = useState("");
+
+  const handleNameBlur = async () => {
+    if (!fullName.trim()) return;
+    try {
+      const response = await fetch(`https://inputtools.google.com/request?text=${encodeURIComponent(fullName)}&itc=te-t-i0-und&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8`);
+      const data = await response.json();
+      if (data[0] === 'SUCCESS') {
+        const translated = data[1][0][1][0];
+        setFullNameTelugu(translated);
+      }
+    } catch (err) {
+      console.error("Translation error", err);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -20,11 +37,14 @@ export default function AdminAddWorkerForm({ categories, localities }: { categor
       if (result.success) {
         setMessage({ text: "Worker added and auto-approved!", type: "success" });
         (e.target as HTMLFormElement).reset();
+        setFullName("");
+        setFullNameTelugu("");
         router.push("/admin");
       } else {
         setMessage({ text: result.error || "Failed", type: "error" });
       }
-    } catch (err: any) {
+    } catch (err) {
+      console.error(err);
       setMessage({ text: "An error occurred", type: "error" });
     } finally {
       setIsSubmitting(false);
@@ -39,9 +59,29 @@ export default function AdminAddWorkerForm({ categories, localities }: { categor
         </div>
       )}
       
-      <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
-        <input name="fullName" type="text" required className="w-full border border-slate-300 p-2 rounded-lg" />
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">Full Name (English)</label>
+          <input 
+            name="fullName" 
+            type="text" 
+            required 
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            onBlur={handleNameBlur}
+            className="w-full border border-slate-300 p-2 rounded-lg" 
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">Full Name (Telugu)</label>
+          <input 
+            name="fullNameTelugu" 
+            type="text" 
+            value={fullNameTelugu}
+            onChange={(e) => setFullNameTelugu(e.target.value)}
+            className="w-full border border-slate-300 p-2 rounded-lg bg-slate-50" 
+          />
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">

@@ -58,7 +58,10 @@ export default async function CategoryPage({
               
               <div className="flex-1">
                 <div className="flex justify-between items-start">
-                  <h3 className="text-lg font-bold text-gray-900">{worker.fullName}</h3>
+                  <h3 className="text-lg font-bold text-gray-900">
+                    {worker.fullName}
+                    {worker.fullNameTelugu && <span className="text-sm font-normal text-gray-500 block">{worker.fullNameTelugu}</span>}
+                  </h3>
                   {worker.mobileVerified && (
                     <div className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-bold flex items-center gap-1">
                       ✅ Verified

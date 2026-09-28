@@ -71,6 +71,7 @@ model Worker {
   id                 String              @id @default(cuid())
   slug               String              @unique // e.g. "ramesh-kumar-electrician-sircilla"
   fullName           String
+  fullNameTelugu     String?
   phone              String              @unique // Duplicate prevention
   whatsappPhone      String?
   profilePhotoUrl    String?

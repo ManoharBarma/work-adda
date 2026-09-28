@@ -114,6 +114,7 @@ export async function createCategory(formData: FormData) {
 // Admin: Register and auto-approve a new worker
 export async function adminRegisterWorker(formData: FormData) {
   const fullName = formData.get("fullName") as string;
+  const fullNameTelugu = formData.get("fullNameTelugu") as string;
   const phone = formData.get("phone") as string;
   const categorySlugs = formData.getAll("category") as string[]; 
   const localityId = formData.get("locality") as string;
@@ -137,6 +138,7 @@ export async function adminRegisterWorker(formData: FormData) {
     const worker = await prisma.worker.create({
       data: {
         fullName,
+        fullNameTelugu,
         phone,
         whatsappPhone,
         bio,
@@ -163,6 +165,7 @@ export async function adminRegisterWorker(formData: FormData) {
 // Public: Register a new worker
 export async function registerWorker(formData: FormData) {
   const fullName = formData.get("fullName") as string;
+  const fullNameTelugu = formData.get("fullNameTelugu") as string;
   const phone = formData.get("phone") as string;
   const categorySlugs = formData.getAll("category") as string[]; // Can be multiple now
   const localityId = formData.get("locality") as string;
@@ -190,6 +193,7 @@ export async function registerWorker(formData: FormData) {
     const worker = await prisma.worker.create({
       data: {
         fullName,
+        fullNameTelugu,
         phone,
         whatsappPhone,
         bio,
