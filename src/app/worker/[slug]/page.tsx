@@ -115,7 +115,7 @@ export default function WorkerProfilePage({ params }: { params: { slug: string }
       {/* Floating Action Buttons */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 flex gap-3 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
         <a 
-          href={`tel:${worker.phone}`}
+          href={`tel:${worker.phone.replace(/\\D/g, '').slice(-10)}`}
           onClick={() => trackIntent('CALL')}
           className="flex-1 bg-gray-900 text-white py-3.5 rounded-xl font-bold flex flex-col items-center justify-center shadow-md active:scale-95 transition leading-tight"
         >
@@ -127,7 +127,7 @@ export default function WorkerProfilePage({ params }: { params: { slug: string }
         </a>
         
         <a 
-          href={`https://wa.me/${worker.phone}`}
+          href={`https://wa.me/${worker.phone.replace(/\\D/g, '').slice(-10)}`}
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => trackIntent('WHATSAPP')}
