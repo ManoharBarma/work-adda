@@ -14,7 +14,7 @@ export default async function Home() {
   return (
     <main className="min-h-screen bg-gray-50 pb-12">
       {/* Hero Section */}
-      <div className="bg-[#E4007C] text-white px-4 py-12 rounded-b-3xl shadow-md text-center">
+      <div className="bg-red-500 text-white px-4 py-12 rounded-b-3xl shadow-md text-center">
         <div className="flex justify-center mb-4">
           <Image 
             src="/logo.jpg" 
@@ -28,7 +28,7 @@ export default async function Home() {
         <h1 className="text-3xl font-bold mb-2 tracking-tight">
           Work Adda
         </h1>
-        <p className="text-pink-100 text-sm mb-6 max-w-xs mx-auto">
+        <p className="text-red-100 text-sm mb-6 max-w-xs mx-auto">
           Find skilled local workers in your area and contact them directly.<br />
           <span className="text-xs opacity-90 block mt-1">(మీ ప్రాంతంలోని నైపుణ్యం కలిగిన కార్మికులను కనుగొనండి మరియు వారిని నేరుగా సంప్రదించండి.)</span>
         </p>
@@ -45,7 +45,7 @@ export default async function Home() {
           <svg className="w-6 h-6 text-gray-400 absolute left-4 top-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
-          <button type="submit" className="absolute right-2 top-2 bottom-2 bg-[#E4007C] text-white px-4 rounded-full font-medium shadow hover:bg-pink-700 transition">
+          <button type="submit" className="absolute right-2 top-2 bottom-2 bg-red-500 text-white px-4 rounded-full font-medium shadow hover:bg-red-600 transition">
             Search
           </button>
         </form>
@@ -72,14 +72,14 @@ export default async function Home() {
 
       {/* Call to Action for Workers */}
       <div className="px-4 mt-12 max-w-lg mx-auto">
-        <div className="bg-gradient-to-r from-pink-50 to-fuchsia-50 border border-pink-100 p-6 rounded-2xl text-center shadow-sm">
+        <div className="bg-gradient-to-r from-red-50 to-orange-50 border border-red-100 p-6 rounded-2xl text-center shadow-sm">
           <h3 className="text-lg font-bold text-gray-800 mb-2">Are you a skilled worker?<br /><span className="text-sm">(మీరు నైపుణ్యం కలిగిన కార్మికులా?)</span></h3>
           <p className="text-sm text-gray-600 mb-5">
             Register your profile for free and let local customers contact you directly. No commissions.
           </p>
           <Link
             href="/register"
-            className="inline-block w-full bg-[#E4007C] text-white py-3 rounded-xl font-medium shadow-md hover:bg-pink-700 transition active:scale-95"
+            className="inline-block w-full bg-red-500 text-white py-3 rounded-xl font-medium shadow-md hover:bg-red-600 transition active:scale-95"
           >
             Register as Worker — Free
           </Link>
