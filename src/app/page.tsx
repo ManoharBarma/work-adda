@@ -14,7 +14,7 @@ export default async function Home() {
       {/* Hero Section */}
       <div className="bg-blue-600 text-white px-4 py-12 rounded-b-3xl shadow-md text-center">
         <h1 className="text-3xl font-bold mb-2 tracking-tight">
-          Sircilla Worker Directory
+          Work Adda Sircilla
         </h1>
         <p className="text-blue-100 text-sm mb-6 max-w-xs mx-auto">
           Find skilled local workers in your area and contact them directly.<br/>
