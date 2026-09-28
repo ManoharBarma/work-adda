@@ -58,44 +58,67 @@ async function main() {
     localityMap[loc.nameEnglish] = existing;
   }
 
-  // Seed Realistic Workers
+  // Seed Realistic Workers (Expanded)
   const realisticWorkers = [
-    {
-      fullName: "Ramesh Kumar", fullNameTelugu: "రమేష్ కుమార్", phone: "9848012341", catSlug: "electrician", locName: "Shanti Nagar", experienceYears: 8, bio: "Expert in house wiring, motor repairs, and short-circuit fixes. Available 24/7."
-    },
-    {
-      fullName: "Venkatesh", fullNameTelugu: "వెంకటేష్", phone: "9949012342", catSlug: "powerloom-mechanic", locName: "Textile Park", experienceYears: 12, bio: "Specialist in auto-loom repairing and regular powerloom maintenance."
-    },
-    {
-      fullName: "Srinivas Goud", fullNameTelugu: "శ్రీనివాస్ గౌడ్", phone: "9849012343", catSlug: "plumber", locName: "BY Pass Road", experienceYears: 5, bio: "All types of plumbing work: PVC, CPVC fitting, water tank cleaning, tap repair."
-    },
-    {
-      fullName: "Kishan Rao", fullNameTelugu: "కిషన్ రావు", phone: "9440012344", catSlug: "ac-technician", locName: "Sundarayya Nagar", experienceYears: 4, bio: "AC servicing, installation, and gas refilling. Refrigerator repairs also done."
-    },
-    {
-      fullName: "Anil", fullNameTelugu: "అనిల్", phone: "9640012345", catSlug: "carpenter", locName: "Vemulawada Road", experienceYears: 15, bio: "Custom furniture making, doors, windows, and modular kitchen woodwork."
-    },
-    {
-      fullName: "Naresh", fullNameTelugu: "నరేష్", phone: "9540012346", catSlug: "painter", locName: "Siva Nagar", experienceYears: 6, bio: "Wall putty, primer, interior and exterior painting with neat finish."
-    },
-    {
-      fullName: "Narasimha", fullNameTelugu: "నరసింహ", phone: "8008012347", catSlug: "general-kuli", locName: "Sanjeevaiah Nagar", experienceYears: 10, bio: "Available for loading, unloading, and any general daily wage labor work."
-    },
-    {
-      fullName: "Yadagiri", fullNameTelugu: "యాదగిరి", phone: "9700012348", catSlug: "construction-labour", locName: "B.Y. Nagar", experienceYears: 7, bio: "Slab work, concrete mixing, brick lifting, and heavy construction work."
-    },
-    {
-      fullName: "Mallesh", fullNameTelugu: "మల్లేష్", phone: "9866012349", catSlug: "mason", locName: "Subash Nagar", experienceYears: 20, bio: "Experienced Taapi Mestri. House construction, plastering, tiles and marble fitting."
-    },
-    {
-      fullName: "Prashanth", fullNameTelugu: "ప్రశాంత్", phone: "9989012350", catSlug: "welder", locName: "Textile Park", experienceYears: 5, bio: "Iron gates, grills, shed works and all kinds of MS welding."
-    },
-    {
-      fullName: "Raju", fullNameTelugu: "రాజు", phone: "9390012351", catSlug: "driver", locName: "Shanti Nagar", experienceYears: 8, bio: "Auto trolley available for shifting goods, cement, and sand."
-    },
-    {
-      fullName: "Lakshmi", fullNameTelugu: "లక్ష్మి", phone: "9246012352", catSlug: "cleaning", locName: "Sundarayya Nagar", experienceYears: 3, bio: "House cleaning, sweeping, mopping and dishwashing on a monthly or daily basis."
-    }
+    // Electrician
+    { fullName: "Ramesh Kumar", fullNameTelugu: "రమేష్ కుమార్", phone: "9848012341", catSlug: "electrician", locName: "Shanti Nagar", experienceYears: 8, bio: "Expert in house wiring, motor repairs, and short-circuit fixes." },
+    { fullName: "Sathish", fullNameTelugu: "సతీష్", phone: "9948012341", catSlug: "electrician", locName: "Textile Park", experienceYears: 5, bio: "Inverter and AC wiring specialist." },
+    { fullName: "Srinu", fullNameTelugu: "శ్రీను", phone: "9748012341", catSlug: "electrician", locName: "Sundarayya Nagar", experienceYears: 12, bio: "All types of electrical works including panel boards." },
+    
+    // Plumber
+    { fullName: "Srinivas Goud", fullNameTelugu: "శ్రీనివాస్ గౌడ్", phone: "9849012343", catSlug: "plumber", locName: "BY Pass Road", experienceYears: 5, bio: "PVC, CPVC fitting, water tank cleaning, tap repair." },
+    { fullName: "Praveen", fullNameTelugu: "ప్రవీణ్", phone: "9949012343", catSlug: "plumber", locName: "Siva Nagar", experienceYears: 8, bio: "Pipe leakage fixing and motor installation." },
+    { fullName: "Balaiah", fullNameTelugu: "బాలయ్య", phone: "9749012343", catSlug: "plumber", locName: "Vemulawada Road", experienceYears: 15, bio: "New house plumbing and drainage systems." },
+    
+    // Powerloom Mechanic
+    { fullName: "Venkatesh", fullNameTelugu: "వెంకటేష్", phone: "9949012342", catSlug: "powerloom-mechanic", locName: "Textile Park", experienceYears: 12, bio: "Specialist in auto-loom repairing." },
+    { fullName: "Laxman", fullNameTelugu: "లక్ష్మణ్", phone: "9849012342", catSlug: "powerloom-mechanic", locName: "B.Y. Nagar", experienceYears: 20, bio: "Senior mechanic for all types of Sircilla looms." },
+    { fullName: "Ganesh", fullNameTelugu: "గణేష్", phone: "9749012342", catSlug: "powerloom-mechanic", locName: "Sanjeevaiah Nagar", experienceYears: 6, bio: "Fast and reliable loom repairs." },
+    
+    // AC Technician
+    { fullName: "Kishan Rao", fullNameTelugu: "కిషన్ రావు", phone: "9440012344", catSlug: "ac-technician", locName: "Sundarayya Nagar", experienceYears: 4, bio: "AC servicing, installation, and gas refilling." },
+    { fullName: "Naveen", fullNameTelugu: "నవీన్", phone: "9540012344", catSlug: "ac-technician", locName: "Subash Nagar", experienceYears: 7, bio: "Window and Split AC repair specialist." },
+    { fullName: "Suresh", fullNameTelugu: "సురేష్", phone: "9640012344", catSlug: "ac-technician", locName: "Shanti Nagar", experienceYears: 3, bio: "AC deep cleaning and fridge repairs." },
+    
+    // Carpenter
+    { fullName: "Anil", fullNameTelugu: "అనిల్", phone: "9640012345", catSlug: "carpenter", locName: "Vemulawada Road", experienceYears: 15, bio: "Custom furniture making, doors, windows." },
+    { fullName: "Lingam", fullNameTelugu: "లింగం", phone: "9740012345", catSlug: "carpenter", locName: "Textile Park", experienceYears: 25, bio: "Expert in teak wood carving and traditional furniture." },
+    { fullName: "Ravi", fullNameTelugu: "రవి", phone: "9840012345", catSlug: "carpenter", locName: "BY Pass Road", experienceYears: 10, bio: "Modular kitchen and wardrobe specialist." },
+    
+    // Painter
+    { fullName: "Naresh", fullNameTelugu: "నరేష్", phone: "9540012346", catSlug: "painter", locName: "Siva Nagar", experienceYears: 6, bio: "Wall putty, primer, interior and exterior painting." },
+    { fullName: "Vijay", fullNameTelugu: "విజయ్", phone: "9440012346", catSlug: "painter", locName: "Sanjeevaiah Nagar", experienceYears: 12, bio: "Royal play designs and texture painting." },
+    { fullName: "Kiran", fullNameTelugu: "కిరణ్", phone: "9340012346", catSlug: "painter", locName: "Sundarayya Nagar", experienceYears: 8, bio: "House painting and wood polish works." },
+    
+    // General Kuli
+    { fullName: "Narasimha", fullNameTelugu: "నరసింహ", phone: "8008012347", catSlug: "general-kuli", locName: "Sanjeevaiah Nagar", experienceYears: 10, bio: "Available for loading, unloading, and daily wage labor." },
+    { fullName: "Yellaiah", fullNameTelugu: "ఎల్లయ్య", phone: "8108012347", catSlug: "general-kuli", locName: "Vemulawada Road", experienceYears: 15, bio: "Hardworking laborer for any field or house work." },
+    { fullName: "Kanakavva", fullNameTelugu: "కనకవ్వ", phone: "8208012347", catSlug: "general-kuli", locName: "Subash Nagar", experienceYears: 20, bio: "Daily wage female worker for shifting and cleaning." },
+    
+    // Construction Labour
+    { fullName: "Yadagiri", fullNameTelugu: "యాదగిరి", phone: "9700012348", catSlug: "construction-labour", locName: "B.Y. Nagar", experienceYears: 7, bio: "Slab work, concrete mixing, brick lifting." },
+    { fullName: "Sammaiah", fullNameTelugu: "సమ్మయ్య", phone: "9800012348", catSlug: "construction-labour", locName: "Shanti Nagar", experienceYears: 12, bio: "Experienced in all types of heavy construction labor." },
+    { fullName: "Muthyam", fullNameTelugu: "ముత్యం", phone: "9900012348", catSlug: "construction-labour", locName: "Textile Park", experienceYears: 5, bio: "Available for daily construction site work." },
+    
+    // Mason (Mestri)
+    { fullName: "Mallesh", fullNameTelugu: "మల్లేష్", phone: "9866012349", catSlug: "mason", locName: "Subash Nagar", experienceYears: 20, bio: "Experienced Taapi Mestri. Plastering, tiles fitting." },
+    { fullName: "Odelu", fullNameTelugu: "ఓదెలు", phone: "9766012349", catSlug: "mason", locName: "BY Pass Road", experienceYears: 25, bio: "Expert in building new houses from foundation." },
+    { fullName: "Prasad", fullNameTelugu: "ప్రసాద్", phone: "9666012349", catSlug: "mason", locName: "Siva Nagar", experienceYears: 15, bio: "Specialist in granite and marble flooring." },
+    
+    // Welder
+    { fullName: "Prashanth", fullNameTelugu: "ప్రశాంత్", phone: "9989012350", catSlug: "welder", locName: "Textile Park", experienceYears: 5, bio: "Iron gates, grills, shed works." },
+    { fullName: "Shiva", fullNameTelugu: "శివ", phone: "9889012350", catSlug: "welder", locName: "Vemulawada Road", experienceYears: 10, bio: "All kinds of MS welding and truss work." },
+    { fullName: "Ashok", fullNameTelugu: "అశోక్", phone: "9789012350", catSlug: "welder", locName: "B.Y. Nagar", experienceYears: 8, bio: "Rolling shutters and steel railing works." },
+    
+    // Driver
+    { fullName: "Raju", fullNameTelugu: "రాజు", phone: "9390012351", catSlug: "driver", locName: "Shanti Nagar", experienceYears: 8, bio: "Auto trolley available for shifting goods." },
+    { fullName: "Mahender", fullNameTelugu: "మహేందర్", phone: "9490012351", catSlug: "driver", locName: "Sanjeevaiah Nagar", experienceYears: 15, bio: "Heavy vehicle and tractor driver." },
+    { fullName: "Vamshi", fullNameTelugu: "వంశీ", phone: "9590012351", catSlug: "driver", locName: "Sundarayya Nagar", experienceYears: 4, bio: "Car driver available for outstation trips." },
+    
+    // Cleaning
+    { fullName: "Lakshmi", fullNameTelugu: "లక్ష్మి", phone: "9246012352", catSlug: "cleaning", locName: "Sundarayya Nagar", experienceYears: 3, bio: "House cleaning, sweeping, mopping." },
+    { fullName: "Sujatha", fullNameTelugu: "సుజాత", phone: "9346012352", catSlug: "cleaning", locName: "B.Y. Nagar", experienceYears: 10, bio: "Available for monthly maid work and dishwashing." },
+    { fullName: "Ramavva", fullNameTelugu: "రామవ్వ", phone: "9446012352", catSlug: "cleaning", locName: "BY Pass Road", experienceYears: 15, bio: "Office cleaning and general housekeeping." }
   ];
 
   for (const w of realisticWorkers) {
