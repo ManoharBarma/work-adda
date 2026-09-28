@@ -23,6 +23,9 @@ export default function AdminLayout({
           <Link href="/admin/categories" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 rounded-lg font-medium transition">
             📁 Categories
           </Link>
+          <Link href="/admin/localities" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 rounded-lg font-medium transition">
+            📍 Localities
+          </Link>
           <Link href="/" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 rounded-lg font-medium transition mt-8" target="_blank">
             🏠 View Public Site
           </Link>

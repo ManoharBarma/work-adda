@@ -111,6 +111,23 @@ export async function createCategory(formData: FormData) {
   return { success: true };
 }
 
+// Admin: Create a new locality
+export async function createLocality(formData: FormData) {
+  const nameEnglish = formData.get("nameEnglish") as string;
+  const nameTelugu = formData.get("nameTelugu") as string;
+  const town = (formData.get("town") as string) || "Sircilla";
+  const district = (formData.get("district") as string) || "Rajanna Sircilla";
+  
+  if (!nameEnglish || !nameTelugu) throw new Error("Missing required fields");
+  
+  await prisma.locality.create({
+    data: { nameEnglish, nameTelugu, town, district }
+  });
+  
+  revalidatePath("/");
+  return { success: true };
+}
+
 // Admin: Register and auto-approve a new worker
 export async function adminRegisterWorker(formData: FormData) {
   const fullName = formData.get("fullName") as string;
