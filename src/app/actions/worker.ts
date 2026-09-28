@@ -93,6 +93,73 @@ export async function getCategories() {
   });
 }
 
+// Admin: Create a new category
+export async function createCategory(formData: FormData) {
+  const nameEnglish = formData.get("nameEnglish") as string;
+  const nameTelugu = formData.get("nameTelugu") as string;
+  const icon = formData.get("icon") as string;
+  
+  if (!nameEnglish || !nameTelugu || !icon) throw new Error("Missing required fields");
+  
+  const slug = nameEnglish.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  
+  await prisma.category.create({
+    data: { nameEnglish, nameTelugu, icon, slug }
+  });
+  
+  revalidatePath("/");
+  return { success: true };
+}
+
+// Admin: Register and auto-approve a new worker
+export async function adminRegisterWorker(formData: FormData) {
+  const fullName = formData.get("fullName") as string;
+  const phone = formData.get("phone") as string;
+  const categorySlugs = formData.getAll("category") as string[]; 
+  const localityId = formData.get("locality") as string;
+  const experienceYears = parseInt(formData.get("experience") as string) || 0;
+  const whatsappPhone = (formData.get("whatsappPhone") as string) || phone;
+  const bio = (formData.get("bio") as string) || null;
+
+  if (!/^[789]\d{9}$/.test(phone)) {
+    return { success: false, error: "Invalid phone number. It must be 10 digits and start with 7, 8, or 9." };
+  }
+  
+  if (!categorySlugs || categorySlugs.length === 0) {
+    return { success: false, error: "Please select at least one category." };
+  }
+
+  const selectedCategories = await prisma.category.findMany({
+    where: { slug: { in: categorySlugs } },
+  });
+
+  try {
+    const worker = await prisma.worker.create({
+      data: {
+        fullName,
+        phone,
+        whatsappPhone,
+        bio,
+        slug: `${fullName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now()}`,
+        categories: {
+          connect: selectedCategories.map(c => ({ id: c.id }))
+        },
+        localityId,
+        experienceYears,
+        status: "APPROVED",
+        mobileVerified: true,
+      },
+    });
+    revalidatePath("/");
+    return { success: true, worker };
+  } catch (error: any) {
+    if (error.code === 'P2002' && error.meta?.target?.includes('phone')) {
+      return { success: false, error: "This phone number is already registered!" };
+    }
+    return { success: false, error: "An unexpected error occurred." };
+  }
+}
+
 // Public: Register a new worker
 export async function registerWorker(formData: FormData) {
   const fullName = formData.get("fullName") as string;

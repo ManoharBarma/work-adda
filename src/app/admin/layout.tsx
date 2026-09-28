@@ -14,10 +14,16 @@ export default function AdminLayout({
           <p className="text-slate-400 text-sm mt-1">Directory Management</p>
         </div>
         <nav className="flex-1 p-4 space-y-2">
-          <Link href="/admin" className="flex items-center gap-3 px-4 py-3 bg-blue-600 text-white rounded-lg font-medium">
+          <Link href="/admin" className="flex items-center gap-3 px-4 py-3 bg-slate-800 text-white rounded-lg font-medium hover:bg-slate-700 transition">
             📊 Dashboard
           </Link>
-          <Link href="/" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 rounded-lg font-medium transition" target="_blank">
+          <Link href="/admin/worker/new" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 rounded-lg font-medium transition">
+            ➕ Add Worker
+          </Link>
+          <Link href="/admin/categories" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 rounded-lg font-medium transition">
+            📁 Categories
+          </Link>
+          <Link href="/" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 rounded-lg font-medium transition mt-8" target="_blank">
             🏠 View Public Site
           </Link>
         </nav>
