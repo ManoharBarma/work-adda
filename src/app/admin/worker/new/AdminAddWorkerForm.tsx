@@ -57,16 +57,23 @@ export default function AdminAddWorkerForm({ categories, localities }: { categor
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-6">
       {message && (
-        <div className={`p-3 rounded mb-4 text-sm font-medium ${message.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+        <div className={`p-4 rounded-xl text-xs font-semibold border ${
+          message.type === 'success' 
+            ? 'bg-[#ECFDF5] text-[#008A05] border-[#A7F3D0]' 
+            : 'bg-red-50 text-red-700 border-red-200'
+        }`}>
           {message.text}
         </div>
       )}
       
-      <div className="grid grid-cols-2 gap-4">
+      {/* Names (English + Telugu) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Full Name (English)</label>
+          <label className="block text-xs font-semibold text-[#484848] mb-1">
+            Full Name (English) <span className="text-[#FF385C]">*</span>
+          </label>
           <input 
             name="fullName" 
             type="text" 
@@ -74,53 +81,87 @@ export default function AdminAddWorkerForm({ categories, localities }: { categor
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             onBlur={() => handleNameBlur(fullName, setFullNameTelugu)}
-            className="w-full border border-slate-300 p-2 rounded-lg" 
+            placeholder="e.g. Ramesh Kumar"
+            className="w-full bg-[#F7F7F7] border border-[#EBEBEB] px-3.5 py-2.5 rounded-xl text-sm text-[#222222] placeholder:text-[#B0B0B0] focus:outline-none focus:bg-white focus:border-[#222222] transition" 
           />
+          <p className="text-[11px] text-[#717171] mt-1">Blurring auto-populates Telugu name</p>
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Full Name (Telugu)</label>
+          <label className="block text-xs font-semibold text-[#484848] mb-1">
+            Full Name (Telugu)
+          </label>
           <input 
             name="fullNameTelugu" 
             type="text" 
             value={fullNameTelugu}
             onChange={(e) => setFullNameTelugu(e.target.value)}
-            className="w-full border border-slate-300 p-2 rounded-lg bg-slate-50" 
+            placeholder="e.g. రమేష్ కుమార్"
+            className="w-full bg-[#F7F7F7] border border-[#EBEBEB] px-3.5 py-2.5 rounded-xl text-sm text-[#222222] placeholder:text-[#B0B0B0] focus:outline-none focus:bg-white focus:border-[#222222] transition" 
           />
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      {/* Phone & WhatsApp */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Phone Number</label>
-          <input name="phone" type="tel" required pattern="[789][0-9]{9}" className="w-full border border-slate-300 p-2 rounded-lg" />
+          <label className="block text-xs font-semibold text-[#484848] mb-1">
+            Phone Number (10 digits) <span className="text-[#FF385C]">*</span>
+          </label>
+          <input 
+            name="phone" 
+            type="tel" 
+            required 
+            pattern="[789][0-9]{9}" 
+            placeholder="9876543210"
+            className="w-full bg-[#F7F7F7] border border-[#EBEBEB] px-3.5 py-2.5 rounded-xl text-sm text-[#222222] placeholder:text-[#B0B0B0] focus:outline-none focus:bg-white focus:border-[#222222] transition font-mono" 
+          />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">WhatsApp (Optional)</label>
-          <input name="whatsappPhone" type="tel" pattern="[789][0-9]{9}" className="w-full border border-slate-300 p-2 rounded-lg" />
+          <label className="block text-xs font-semibold text-[#484848] mb-1">
+            WhatsApp Number (Optional)
+          </label>
+          <input 
+            name="whatsappPhone" 
+            type="tel" 
+            pattern="[789][0-9]{9}" 
+            placeholder="Same as phone if empty"
+            className="w-full bg-[#F7F7F7] border border-[#EBEBEB] px-3.5 py-2.5 rounded-xl text-sm text-[#222222] placeholder:text-[#B0B0B0] focus:outline-none focus:bg-white focus:border-[#222222] transition font-mono" 
+          />
         </div>
       </div>
 
+      {/* Categories selection */}
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">Select Categories</label>
-        <div className="grid grid-cols-2 gap-2 border border-slate-300 p-3 rounded-lg max-h-48 overflow-y-auto">
+        <label className="block text-xs font-semibold text-[#484848] mb-1.5">
+          Select Categories (Trades) <span className="text-[#FF385C]">*</span>
+        </label>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 bg-[#FAFAFA] border border-[#EBEBEB] p-3 rounded-2xl max-h-48 overflow-y-auto">
           {categories.map(c => (
-            <label key={c.id} className="flex items-center space-x-2 text-sm">
-              <input type="checkbox" name="category" value={c.slug} className="rounded text-blue-600 focus:ring-blue-500" />
-              <span>{c.icon} {c.nameEnglish}</span>
+            <label key={c.id} className="flex items-center gap-2 p-2 rounded-xl bg-white border border-[#EBEBEB] hover:border-[#222222] transition cursor-pointer text-xs font-medium text-[#222222]">
+              <input 
+                type="checkbox" 
+                name="category" 
+                value={c.slug} 
+                className="rounded accent-[#FF385C] text-[#FF385C] focus:ring-[#FF385C] w-4 h-4" 
+              />
+              <span className="truncate">{c.icon} {c.nameEnglish}</span>
             </label>
           ))}
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      {/* Locality & Experience */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Locality</label>
+          <label className="block text-xs font-semibold text-[#484848] mb-1">
+            Locality in Sircilla <span className="text-[#FF385C]">*</span>
+          </label>
           <select 
             name="locality" 
             required 
             value={selectedLocalityId}
             onChange={(e) => setSelectedLocalityId(e.target.value)}
-            className="w-full border border-slate-300 p-2 rounded-lg"
+            className="w-full bg-[#F7F7F7] border border-[#EBEBEB] px-3.5 py-2.5 rounded-xl text-sm text-[#222222] focus:outline-none focus:bg-white focus:border-[#222222] transition cursor-pointer"
           >
             <option value="">Select Locality...</option>
             {localities.map(loc => (
@@ -129,15 +170,25 @@ export default function AdminAddWorkerForm({ categories, localities }: { categor
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Experience (Years)</label>
-          <input name="experience" type="number" min="0" required className="w-full border border-slate-300 p-2 rounded-lg" />
+          <label className="block text-xs font-semibold text-[#484848] mb-1">
+            Years of Experience <span className="text-[#FF385C]">*</span>
+          </label>
+          <input 
+            name="experience" 
+            type="number" 
+            min="0" 
+            required 
+            defaultValue="2"
+            className="w-full bg-[#F7F7F7] border border-[#EBEBEB] px-3.5 py-2.5 rounded-xl text-sm text-[#222222] focus:outline-none focus:bg-white focus:border-[#222222] transition" 
+          />
         </div>
       </div>
 
+      {/* Dynamic custom locality */}
       {isOtherLocality && (
-        <div className="grid grid-cols-2 gap-4 bg-orange-50 p-4 rounded-lg border border-orange-100">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-[#FFF1F3] p-4 rounded-2xl border border-[#FFD2D9]">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Custom Locality (English)</label>
+            <label className="block text-xs font-semibold text-[#FF385C] mb-1">Custom Locality (English)</label>
             <input 
               name="customLocality" 
               type="text" 
@@ -145,32 +196,42 @@ export default function AdminAddWorkerForm({ categories, localities }: { categor
               value={customLocality}
               onChange={(e) => setCustomLocality(e.target.value)}
               onBlur={() => handleNameBlur(customLocality, setCustomLocalityTelugu)}
-              className="w-full border border-slate-300 p-2 rounded-lg" 
+              placeholder="e.g. New Colony"
+              className="w-full bg-white border border-[#FFD2D9] px-3.5 py-2 rounded-xl text-sm text-[#222222] focus:outline-none focus:border-[#FF385C]" 
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Custom Locality (Telugu)</label>
+            <label className="block text-xs font-semibold text-[#FF385C] mb-1">Custom Locality (Telugu)</label>
             <input 
               name="customLocalityTelugu" 
               type="text" 
               required={isOtherLocality}
               value={customLocalityTelugu}
               onChange={(e) => setCustomLocalityTelugu(e.target.value)}
-              className="w-full border border-slate-300 p-2 rounded-lg" 
+              placeholder="e.g. న్యూ కాలనీ"
+              className="w-full bg-white border border-[#FFD2D9] px-3.5 py-2 rounded-xl text-sm text-[#222222] focus:outline-none focus:border-[#FF385C]" 
             />
           </div>
         </div>
       )}
 
+      {/* Bio */}
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">Bio / About (Optional)</label>
-        <textarea name="bio" rows={3} className="w-full border border-slate-300 p-2 rounded-lg"></textarea>
+        <label className="block text-xs font-semibold text-[#484848] mb-1">
+          Bio / Brief Introduction (Optional)
+        </label>
+        <textarea 
+          name="bio" 
+          rows={3} 
+          placeholder="Brief summary of skills, specialties, or standard charges..."
+          className="w-full bg-[#F7F7F7] border border-[#EBEBEB] px-3.5 py-2.5 rounded-xl text-sm text-[#222222] placeholder:text-[#B0B0B0] focus:outline-none focus:bg-white focus:border-[#222222] transition"
+        ></textarea>
       </div>
 
       <button 
         type="submit" 
         disabled={isSubmitting}
-        className="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+        className="w-full bg-[#FF385C] hover:bg-[#E00B41] active:bg-[#D7043A] text-white font-semibold py-3 rounded-full text-sm shadow-[0_2px_8px_rgba(255,56,92,0.25)] transition active:scale-[0.98] disabled:opacity-50"
       >
         {isSubmitting ? "Adding Worker..." : "Add & Auto-Approve Worker"}
       </button>
