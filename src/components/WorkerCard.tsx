@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { isAllSircillaLocality } from "@/lib/locality";
+import { parseWorkerBio } from "@/lib/workerBio";
 import SaveWorkerButton from "@/components/SaveWorkerButton";
 
 export interface WorkerCardData {
@@ -9,6 +10,7 @@ export interface WorkerCardData {
   fullName: string;
   fullNameTelugu?: string | null;
   profilePhotoUrl?: string | null;
+  bio?: string | null;
   mobileVerified: boolean;
   experienceYears: number;
   locality?: {
@@ -26,6 +28,8 @@ interface WorkerCardProps {
 }
 
 export default function WorkerCard({ worker, showCategories = false }: WorkerCardProps) {
+  const { visitingCharge } = parseWorkerBio(worker.bio);
+
   return (
     <div className="relative group">
       <SaveWorkerButton
@@ -89,6 +93,11 @@ export default function WorkerCard({ worker, showCategories = false }: WorkerCar
               <span className="text-[11px] text-[#717171]">
                 ({worker.experienceYears} సం. అనుభవం)
               </span>
+              {visitingCharge && (
+                <span className="font-semibold text-[#008A05] bg-[#ECFDF5] px-2 py-0.5 rounded-md border border-[#A7F3D0]">
+                  {visitingCharge}
+                </span>
+              )}
             </div>
 
             {worker.locality && (

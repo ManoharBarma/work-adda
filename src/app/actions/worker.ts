@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { sanitizeImageUrl, sanitizeWorkPhotos } from "@/lib/imageValidation";
+import { composeWorkerBio } from "@/lib/workerBio";
 import {
   ALL_SIRCILLA_NAME_EN,
   ALL_SIRCILLA_NAME_TE,
@@ -99,7 +100,9 @@ export async function updateWorkerAdmin(id: string, formData: FormData) {
   const rawLocalityId = formData.get("locality") as string;
   const categorySlugs = formData.getAll("category") as string[];
   const whatsappPhone = (formData.get("whatsappPhone") as string) || phone;
-  const bio = (formData.get("bio") as string) || null;
+  const rawBio = (formData.get("bio") as string) || null;
+  const visitingCharge = (formData.get("visitingCharge") as string) || null;
+  const bio = composeWorkerBio(rawBio, visitingCharge);
   const profilePhotoUrl = sanitizeImageUrl(formData.get("profilePhotoUrl") as string | null);
   const workPhotos = sanitizeWorkPhotos(formData.getAll("workPhotos"));
 
@@ -195,7 +198,9 @@ export async function adminRegisterWorker(formData: FormData) {
   const customLocalityTelugu = formData.get("customLocalityTelugu") as string;
   const experienceYears = parseInt(formData.get("experience") as string) || 0;
   const whatsappPhone = (formData.get("whatsappPhone") as string) || phone;
-  const bio = (formData.get("bio") as string) || null;
+  const rawBio = (formData.get("bio") as string) || null;
+  const visitingCharge = (formData.get("visitingCharge") as string) || null;
+  const bio = composeWorkerBio(rawBio, visitingCharge);
   const profilePhotoUrl = sanitizeImageUrl(formData.get("profilePhotoUrl") as string | null);
   const workPhotos = sanitizeWorkPhotos(formData.getAll("workPhotos"));
 
@@ -256,7 +261,9 @@ export async function registerWorker(formData: FormData) {
   const customLocalityTelugu = formData.get("customLocalityTelugu") as string;
   const experienceYears = parseInt(formData.get("experience") as string) || 0;
   const whatsappPhone = (formData.get("whatsappPhone") as string) || phone;
-  const bio = (formData.get("bio") as string) || null;
+  const rawBio = (formData.get("bio") as string) || null;
+  const visitingCharge = (formData.get("visitingCharge") as string) || null;
+  const bio = composeWorkerBio(rawBio, visitingCharge);
   const profilePhotoUrl = sanitizeImageUrl(formData.get("profilePhotoUrl") as string | null);
   const workPhotos = sanitizeWorkPhotos(formData.getAll("workPhotos"));
 

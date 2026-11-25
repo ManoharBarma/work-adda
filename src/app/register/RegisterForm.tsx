@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useTransition } from "react";
 import { registerWorker } from "@/app/actions/worker";
 import { ProfilePhotoField, WorkPhotosField } from "@/components/ImageUpload";
+import VisitingChargeField from "@/components/VisitingChargeField";
 import {
   ALL_SIRCILLA_NAME_EN,
   ALL_SIRCILLA_NAME_TE,
@@ -274,6 +275,8 @@ export default function RegisterForm({ categories, localities }: { categories: a
               className="w-full border border-[#EBEBEB] rounded-xl px-4 py-3 text-sm text-[#222222] placeholder-[#B0B0B0] focus:outline-none focus:ring-2 focus:ring-[#FF385C]/20 focus:border-[#FF385C] transition-all" 
             />
           </div>
+
+          <VisitingChargeField />
 
           <div>
             <label className="block text-xs font-bold text-[#222222] mb-1.5">

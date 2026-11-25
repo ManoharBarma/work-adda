@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getWorkerBySlug } from "@/app/actions/worker";
 import { isAllSircillaLocality } from "@/lib/locality";
+import { parseWorkerBio } from "@/lib/workerBio";
 import WorkerActions, { WorkerShareButton } from "./WorkerActions";
 import ReportWorkerButton from "./ReportWorkerButton";
 import SaveWorkerButton from "@/components/SaveWorkerButton";
@@ -54,8 +55,9 @@ export default async function WorkerProfilePage({
   const categoryNames = data.categories.map((c) => c.nameEnglish).join(", ");
   const categorySlug = data.categories[0]?.slug || "";
   const skills = data.skills.map((ws) => ws.skill.nameEnglish);
+  const { visitingCharge, cleanBio } = parseWorkerBio(data.bio);
   const about =
-    data.bio ||
+    cleanBio ||
     "Experienced and reliable worker available for work in Sircilla. Contact directly for availability and rates.";
 
   return (
@@ -144,7 +146,7 @@ export default async function WorkerProfilePage({
           </div>
 
           {/* Highlights Row */}
-          <div className="grid grid-cols-2 gap-3 pt-4 border-t border-[#EBEBEB]">
+          <div className={`grid gap-3 pt-4 border-t border-[#EBEBEB] ${visitingCharge ? "grid-cols-3" : "grid-cols-2"}`}>
             <div className="bg-[#F7F7F7] rounded-xl p-3 border border-[#EBEBEB]/70">
               <span className="text-xs text-[#717171] block mb-0.5">Experience (అనుభవం)</span>
               <span className="text-base font-extrabold text-[#222222]">
@@ -163,6 +165,15 @@ export default async function WorkerProfilePage({
                 {data.locality.nameTelugu}
               </span>
             </div>
+            {visitingCharge && (
+              <div className="bg-[#ECFDF5] rounded-xl p-3 border border-[#A7F3D0]">
+                <span className="text-xs text-[#008A05] block mb-0.5">Starting Rate</span>
+                <span className="text-sm font-extrabold text-[#008A05] block truncate" title={visitingCharge}>
+                  {visitingCharge}
+                </span>
+                <span className="text-[10px] text-[#008A05]/80 block truncate">ప్రారంభ ఛార్జీ</span>
+              </div>
+            )}
           </div>
         </div>
 

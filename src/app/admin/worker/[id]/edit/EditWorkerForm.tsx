@@ -4,6 +4,8 @@ import { useState, useTransition } from "react";
 import { updateWorkerAdmin } from "@/app/actions/worker";
 import { useRouter } from "next/navigation";
 import { ProfilePhotoField, WorkPhotosField } from "@/components/ImageUpload";
+import VisitingChargeField from "@/components/VisitingChargeField";
+import { parseWorkerBio } from "@/lib/workerBio";
 import {
   ALL_SIRCILLA_NAME_EN,
   ALL_SIRCILLA_NAME_TE,
@@ -33,6 +35,7 @@ export default function EditWorkerForm({ worker, categories, localities }: { wor
   };
 
   const defaultCategorySlugs = worker.categories?.map((c: any) => c.slug) || [];
+  const { visitingCharge, cleanBio } = parseWorkerBio(worker.bio);
 
   return (
     <form action={handleSubmit} className="bg-white p-6 sm:p-8 rounded-2xl border border-[#EBEBEB] shadow-[0_2px_8px_rgba(0,0,0,0.04)] space-y-6">
@@ -147,6 +150,8 @@ export default function EditWorkerForm({ worker, categories, localities }: { wor
         </div>
       </div>
 
+      <VisitingChargeField initialValue={visitingCharge || ""} />
+
       {/* Bio */}
       <div>
         <label className="block text-xs font-semibold text-[#484848] mb-1.5">
@@ -155,7 +160,7 @@ export default function EditWorkerForm({ worker, categories, localities }: { wor
         <textarea 
           name="bio" 
           rows={3}
-          defaultValue={worker.bio || ""}
+          defaultValue={cleanBio}
           className="w-full bg-[#F7F7F7] border border-[#EBEBEB] px-3.5 py-2.5 rounded-xl text-sm text-[#222222] placeholder:text-[#B0B0B0] focus:outline-none focus:bg-white focus:border-[#222222] transition resize-none" 
         ></textarea>
       </div>

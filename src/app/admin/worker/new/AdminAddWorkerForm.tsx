@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { adminRegisterWorker } from "@/app/actions/worker";
 import { ProfilePhotoField, WorkPhotosField } from "@/components/ImageUpload";
+import VisitingChargeField from "@/components/VisitingChargeField";
 import {
   ALL_SIRCILLA_NAME_EN,
   ALL_SIRCILLA_NAME_TE,
@@ -229,6 +230,9 @@ export default function AdminAddWorkerForm({ categories, localities }: { categor
           </div>
         </div>
       )}
+
+      {/* Visiting Charge */}
+      <VisitingChargeField />
 
       {/* Bio */}
       <div>
