@@ -11,6 +11,15 @@ interface WorkerActionsProps {
   locality: string;
 }
 
+function summarizeCategories(category: string): string {
+  const parts = category
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (parts.length <= 2) return parts.join(", ");
+  return `${parts.slice(0, 2).join(", ")} +${parts.length - 2} more`;
+}
+
 function sendTrackBeacon(workerId: string, type: "VIEW" | "CALL" | "WHATSAPP" | "SHARE") {
   const payload = JSON.stringify({ workerId, type });
   if (typeof navigator !== "undefined" && navigator.sendBeacon) {
@@ -37,7 +46,8 @@ export function WorkerShareButton({
   const handleShare = async () => {
     sendTrackBeacon(workerId, "SHARE");
     const url = window.location.href;
-    const text = `${workerName} (${category}) in ${locality} — Work Adda Sircilla`;
+    const categorySummary = summarizeCategories(category);
+    const text = `${workerName}${categorySummary ? ` (${categorySummary})` : ""} in ${locality} — Work Adda Sircilla`;
 
     if (navigator.share) {
       try {
@@ -83,10 +93,9 @@ export function WorkerShareButton({
 export default function WorkerActions({
   workerId,
   workerName,
-  category,
   phone,
   whatsappPhone,
-}: Pick<WorkerActionsProps, "workerId" | "workerName" | "category" | "phone" | "whatsappPhone">) {
+}: Pick<WorkerActionsProps, "workerId" | "workerName" | "phone" | "whatsappPhone">) {
   useEffect(() => {
     sendTrackBeacon(workerId, "VIEW");
   }, [workerId]);
@@ -94,7 +103,7 @@ export default function WorkerActions({
   const cleanCallPhone = phone.replace(/\D/g, "").slice(-10);
   const cleanWaPhone = (whatsappPhone || phone).replace(/\D/g, "").slice(-10);
   const waMessage = encodeURIComponent(
-    `Hi ${workerName}, I found your ${category ? `${category} ` : ""}profile on Work Adda Sircilla. Are you available for work?`
+    `Hi ${workerName}, I found you on Work Adda Sircilla. Are you available for work?`
   );
 
   return (

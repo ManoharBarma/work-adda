@@ -252,7 +252,6 @@ export default async function WorkerProfilePage({
       <WorkerActions
         workerId={data.id}
         workerName={data.fullName}
-        category={categoryNames}
         phone={data.phone}
         whatsappPhone={data.whatsappPhone}
       />
