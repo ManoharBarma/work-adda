@@ -6,6 +6,7 @@ import { getWorkerBySlug } from "@/app/actions/worker";
 import { isAllSircillaLocality } from "@/lib/locality";
 import WorkerActions, { WorkerShareButton } from "./WorkerActions";
 import ReportWorkerButton from "./ReportWorkerButton";
+import SaveWorkerButton from "@/components/SaveWorkerButton";
 
 export const dynamic = "force-dynamic";
 
@@ -80,6 +81,7 @@ export default async function WorkerProfilePage({
           </div>
 
           <div className="flex items-center gap-2">
+            <SaveWorkerButton workerId={data.id} className="w-10 h-10" />
             <WorkerShareButton
               workerId={data.id}
               workerName={data.fullName}

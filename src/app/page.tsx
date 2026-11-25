@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import Image from "next/image";
+import { SavedNavBadge } from "@/components/SaveWorkerButton";
 
 export const revalidate = 300;
 
@@ -98,9 +99,12 @@ export default async function Home() {
             <h2 className="text-lg font-bold text-[#222222]">Explore Services</h2>
             <p className="text-xs text-[#717171]">వర్గాలను బ్రౌజ్ చేయండి</p>
           </div>
-          <span className="text-xs font-semibold text-[#FF385C] bg-[#FFF1F3] px-2.5 py-1 rounded-full border border-[#FFCCD5]">
-            {categories.length} Categories
-          </span>
+          <div className="flex items-center gap-2">
+            <SavedNavBadge />
+            <span className="text-xs font-semibold text-[#FF385C] bg-[#FFF1F3] px-2.5 py-1 rounded-full border border-[#FFCCD5]">
+              {categories.length} Categories
+            </span>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">

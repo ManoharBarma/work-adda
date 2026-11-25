@@ -352,6 +352,23 @@ export async function getApprovedWorkersByCategory(categorySlug: string, localit
   });
 }
 
+// Public: Get approved workers by IDs (for Saved Workers page)
+export async function getApprovedWorkersByIds(ids: string[]) {
+  if (!Array.isArray(ids) || ids.length === 0) return [];
+  const cleanIds = ids.slice(0, 50);
+
+  return await prisma.worker.findMany({
+    where: {
+      id: { in: cleanIds },
+      status: "APPROVED",
+    },
+    include: {
+      locality: true,
+      categories: true,
+    },
+  });
+}
+
 // Public: Get single worker by Slug
 export async function getWorkerBySlug(slug: string) {
   return await prisma.worker.findUnique({
