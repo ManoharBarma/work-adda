@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import Image from "next/image";
 import { SavedNavBadge } from "@/components/SaveWorkerButton";
+import QuickSearchChips from "@/components/QuickSearchChips";
 
 export const revalidate = 300;
 
@@ -9,7 +10,16 @@ export default async function Home() {
   const categories = await prisma.category.findMany({
     where: { isActive: true },
     orderBy: { displayOrder: "asc" },
+    include: {
+      _count: {
+        select: { workers: { where: { status: "APPROVED" } } },
+      },
+    },
   });
+
+  const topCategories = [...categories]
+    .sort((a, b) => b._count.workers - a._count.workers)
+    .slice(0, 6);
 
   return (
     <main className="min-h-screen bg-[#F7F7F7] pb-16">
@@ -92,8 +102,11 @@ export default async function Home() {
         </div>
       </div>
 
+      {/* Quick Search Chips */}
+      <QuickSearchChips categories={topCategories} />
+
       {/* Categories Section */}
-      <div className="px-4 mt-8 max-w-lg mx-auto">
+      <div className="px-4 mt-6 max-w-lg mx-auto">
         <div className="flex items-baseline justify-between mb-3 px-1">
           <div>
             <h2 className="text-lg font-bold text-[#222222]">Explore Services</h2>
@@ -108,12 +121,21 @@ export default async function Home() {
         </div>
 
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {categories.map((cat) => (
+          {categories.map((cat, index) => (
             <Link
               href={`/category/${cat.slug}`}
               key={cat.slug}
-              className="bg-white border border-[#EBEBEB] hover:border-[#FF385C]/40 p-4 rounded-2xl flex flex-col items-center text-center shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 active:scale-95 transition-all group"
+              style={{ animationDelay: `${Math.min(index * 30, 300)}ms` }}
+              className="animate-slide-up relative bg-white border border-[#EBEBEB] hover:border-[#FF385C]/40 p-4 rounded-2xl flex flex-col items-center text-center shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 active:scale-95 transition-all group"
             >
+              {cat._count.workers > 0 && (
+                <span
+                  aria-label={`${cat._count.workers} workers`}
+                  className="absolute top-2.5 right-2.5 text-[10px] font-bold text-[#717171] bg-[#F7F7F7] group-hover:bg-[#FFF1F3] group-hover:text-[#FF385C] px-1.5 py-0.5 rounded-full border border-[#EBEBEB] group-hover:border-[#FFCCD5] transition-colors"
+                >
+                  {cat._count.workers}
+                </span>
+              )}
               <div className="text-3xl mb-2 group-hover:scale-110 transition-transform duration-200">
                 {cat.icon}
               </div>

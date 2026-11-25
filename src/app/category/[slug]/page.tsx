@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { getApprovedWorkersByCategory, getLocalities } from "@/app/actions/worker";
+import { getApprovedWorkersByCategory, getLocalitiesForCategory } from "@/app/actions/worker";
 import LocalityFilter from "./LocalityFilter";
-import WorkerCard from "@/components/WorkerCard";
+import WorkerCardList from "./WorkerCardList";
 
 export const dynamic = "force-dynamic";
 
@@ -38,8 +38,10 @@ export default async function CategoryPage({
     where: { slug: params.slug },
   });
 
-  const workers = await getApprovedWorkersByCategory(params.slug, searchParams.locality);
-  const localities = await getLocalities();
+  const [workers, localities] = await Promise.all([
+    getApprovedWorkersByCategory(params.slug, searchParams.locality),
+    getLocalitiesForCategory(params.slug, searchParams.locality),
+  ]);
   
   const title = category 
     ? { en: category.nameEnglish, te: category.nameTelugu, icon: category.icon } 
@@ -80,30 +82,11 @@ export default async function CategoryPage({
         <LocalityFilter localities={localities} />
 
         {/* Worker Cards List */}
-        <div className="px-4 space-y-3 mt-1">
-          {workers.length === 0 && (
-            <div className="bg-white border border-[#EBEBEB] rounded-2xl p-8 text-center shadow-sm mt-4">
-              <div className="w-14 h-14 bg-[#F7F7F7] rounded-full flex items-center justify-center text-2xl mx-auto mb-3">
-                🔍
-              </div>
-              <h3 className="font-bold text-[#222222] text-base mb-1">
-                No workers found
-              </h3>
-              <p className="text-xs text-[#717171] mb-5 max-w-xs mx-auto">
-                No registered workers found in this locality yet. Try choosing &quot;Any Locality&quot; or check back soon.
-              </p>
-              <Link 
-                href="/register" 
-                className="inline-block bg-[#FF385C] hover:bg-[#E00B41] text-white text-xs font-semibold px-5 py-2.5 rounded-full shadow transition-all"
-              >
-                Register as {title.en}
-              </Link>
-            </div>
-          )}
-
-          {workers.map((worker) => (
-            <WorkerCard key={worker.id} worker={worker} />
-          ))}
+        <div className="px-4 mt-1">
+          <WorkerCardList
+            workers={workers}
+            categoryTitle={title.en}
+          />
         </div>
       </div>
     </main>

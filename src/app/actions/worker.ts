@@ -117,6 +117,23 @@ export async function getCategories() {
   });
 }
 
+// Public: Get top categories by approved worker count (for homepage quick chips)
+export async function getTopCategories(limit = 6) {
+  const cats = await prisma.category.findMany({
+    where: { isActive: true },
+    orderBy: { displayOrder: "asc" },
+    include: {
+      _count: {
+        select: { workers: { where: { status: "APPROVED" } } },
+      },
+    },
+  });
+  // Sort by worker count desc, then displayOrder
+  return cats
+    .sort((a, b) => b._count.workers - a._count.workers)
+    .slice(0, limit);
+}
+
 // Admin: Create a new category
 export async function createCategory(formData: FormData) {
   requireAdmin();
@@ -403,6 +420,29 @@ export async function getWorker(id: string) {
 // Public: Get all localities for the dropdown
 export async function getLocalities() {
   const localities = await prisma.locality.findMany({
+    orderBy: { nameEnglish: "asc" },
+  });
+  return sortLocalitiesWithAllSircillaFirst(localities);
+}
+
+export async function getLocalitiesForCategory(
+  categorySlug: string,
+  selectedLocalityId?: string
+) {
+  const localities = await prisma.locality.findMany({
+    where: {
+      OR: [
+        {
+          workers: {
+            some: {
+              status: "APPROVED",
+              categories: { some: { slug: categorySlug } },
+            },
+          },
+        },
+        ...(selectedLocalityId ? [{ id: selectedLocalityId }] : []),
+      ],
+    },
     orderBy: { nameEnglish: "asc" },
   });
   return sortLocalitiesWithAllSircillaFirst(localities);

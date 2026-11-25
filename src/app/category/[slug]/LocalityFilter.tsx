@@ -9,8 +9,7 @@ export default function LocalityFilter({ localities }: { localities: any[] }) {
   const searchParams = useSearchParams();
   const currentLocality = searchParams.get("locality") || "";
 
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const localityId = e.target.value;
+  const select = (localityId: string) => {
     if (localityId) {
       router.push(`?locality=${localityId}`);
     } else {
@@ -18,29 +17,40 @@ export default function LocalityFilter({ localities }: { localities: any[] }) {
     }
   };
 
+  if (localities.length === 0) return null;
+
   return (
-    <div className="px-4 py-3 flex gap-2 overflow-x-auto hide-scrollbar">
-      <div className="relative w-full">
-        <select 
-          value={currentLocality}
-          onChange={handleChange}
-          className="appearance-none w-full bg-white border border-[#EBEBEB] text-[#222222] font-medium px-4 py-2.5 pr-9 rounded-full text-xs shadow-[0_1px_3px_rgba(0,0,0,0.05)] hover:border-[#222222] focus:outline-none focus:ring-2 focus:ring-[#FF385C]/30 focus:border-[#FF385C] transition-all cursor-pointer"
+    <nav
+      aria-label="Filter by locality"
+      className="px-4 py-3 flex gap-2 overflow-x-auto hide-scrollbar"
+    >
+      {/* All pill */}
+      <button
+        type="button"
+        onClick={() => select("")}
+        className={`shrink-0 inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-all active:scale-95 ${
+          currentLocality === ""
+            ? "bg-[#222222] text-white border-[#222222] shadow-sm"
+            : "bg-white text-[#484848] border-[#EBEBEB] hover:border-[#222222]"
+        }`}
+      >
+        📍 All Areas
+      </button>
+
+      {localities.map((loc) => (
+        <button
+          key={loc.id}
+          type="button"
+          onClick={() => select(loc.id)}
+          className={`shrink-0 inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-all active:scale-95 whitespace-nowrap ${
+            currentLocality === loc.id
+              ? "bg-[#FF385C] text-white border-[#FF385C] shadow-sm"
+              : "bg-white text-[#484848] border-[#EBEBEB] hover:border-[#FF385C]/50 hover:text-[#FF385C]"
+          }`}
         >
-          <option value="">📍 Any Locality in Sircilla (ఏదైనా ప్రాంతం)</option>
-          {localities.map(loc => (
-            <option key={loc.id} value={loc.id}>
-              {isAllSircillaLocality(loc)
-                ? `🌐 ${loc.nameEnglish} (${loc.nameTelugu})`
-                : `${loc.nameEnglish} (${loc.nameTelugu})`}
-            </option>
-          ))}
-        </select>
-        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3.5 text-[#717171]">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-          </svg>
-        </div>
-      </div>
-    </div>
+          {isAllSircillaLocality(loc) ? `🌐 ${loc.nameEnglish}` : loc.nameEnglish}
+        </button>
+      ))}
+    </nav>
   );
 }

@@ -8,6 +8,8 @@ import { parseWorkerBio } from "@/lib/workerBio";
 import WorkerActions, { WorkerShareButton } from "./WorkerActions";
 import ReportWorkerButton from "./ReportWorkerButton";
 import SaveWorkerButton from "@/components/SaveWorkerButton";
+import WorkPhotoGallery from "@/components/WorkPhotoGallery";
+import CopyPhoneButton from "@/components/CopyPhoneButton";
 
 export const dynamic = "force-dynamic";
 
@@ -140,9 +142,12 @@ export default async function WorkerProfilePage({
             <h3 className="text-base font-medium text-[#717171] mb-2">{data.fullNameTelugu}</h3>
           )}
 
-          <div className="inline-flex items-center gap-1.5 bg-[#FFF1F3] text-[#FF385C] border border-[#FFCCD5] px-3.5 py-1 rounded-full text-xs font-bold mb-4">
-            <span>🛠️</span>
-            <span>{categoryNames}</span>
+          <div className="flex flex-col items-center gap-2 mb-4">
+            <div className="inline-flex items-center gap-1.5 bg-[#FFF1F3] text-[#FF385C] border border-[#FFCCD5] px-3.5 py-1 rounded-full text-xs font-bold">
+              <span>🛠️</span>
+              <span>{categoryNames}</span>
+            </div>
+            <CopyPhoneButton phone={data.phone} />
           </div>
 
           {/* Highlights Row */}
@@ -209,27 +214,14 @@ export default async function WorkerProfilePage({
         {/* Work Gallery Section */}
         {data.workPhotos && data.workPhotos.length > 0 && (
           <div className="bg-white rounded-2xl border border-[#EBEBEB] p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-base">🖼️</span>
-              <h3 className="text-base font-bold text-[#222222]">Work Photos (పని ఫోటోలు)</h3>
+            <div className="flex items-center justify-between gap-2 mb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-base">🖼️</span>
+                <h3 className="text-base font-bold text-[#222222]">Work Photos (పని ఫోటోలు)</h3>
+              </div>
+              <span className="text-[11px] text-[#717171]">Tap to zoom</span>
             </div>
-            <div className="grid grid-cols-3 gap-2.5">
-              {data.workPhotos.map((photo, index) => (
-                <div
-                  key={photo.id}
-                  className="aspect-square rounded-xl overflow-hidden border border-[#EBEBEB] bg-[#F7F7F7]"
-                >
-                  <Image
-                    src={photo.photoUrl}
-                    alt={`${data.fullName} work sample ${index + 1}`}
-                    width={240}
-                    height={240}
-                    unoptimized
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ))}
-            </div>
+            <WorkPhotoGallery photos={data.workPhotos} workerName={data.fullName} />
           </div>
         )}
 
