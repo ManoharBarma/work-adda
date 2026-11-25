@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { registerWorker } from "@/app/actions/worker";
+import { ProfilePhotoField, WorkPhotosField } from "@/components/ImageUpload";
 import {
   ALL_SIRCILLA_NAME_EN,
   ALL_SIRCILLA_NAME_TE,
@@ -285,6 +286,9 @@ export default function RegisterForm({ categories, localities }: { categories: a
               className="w-full border border-[#EBEBEB] rounded-xl px-4 py-3 text-sm text-[#222222] placeholder-[#B0B0B0] focus:outline-none focus:ring-2 focus:ring-[#FF385C]/20 focus:border-[#FF385C] resize-none transition-all" 
             ></textarea>
           </div>
+
+          <ProfilePhotoField />
+          <WorkPhotosField />
 
           <div className="pt-2">
             <button 

@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { sanitizeImageUrl, sanitizeWorkPhotos } from "@/lib/imageValidation";
 import {
   ALL_SIRCILLA_NAME_EN,
   ALL_SIRCILLA_NAME_TE,
@@ -99,6 +100,8 @@ export async function updateWorkerAdmin(id: string, formData: FormData) {
   const categorySlugs = formData.getAll("category") as string[];
   const whatsappPhone = (formData.get("whatsappPhone") as string) || phone;
   const bio = (formData.get("bio") as string) || null;
+  const profilePhotoUrl = sanitizeImageUrl(formData.get("profilePhotoUrl") as string | null);
+  const workPhotos = sanitizeWorkPhotos(formData.getAll("workPhotos"));
 
   if (!/^[789]\d{9}$/.test(phone)) {
     return { success: false, error: "Invalid phone number. It must be 10 digits and start with 7, 8, or 9." };
@@ -117,11 +120,16 @@ export async function updateWorkerAdmin(id: string, formData: FormData) {
         phone,
         whatsappPhone,
         bio,
+        profilePhotoUrl,
         experienceYears,
         localityId,
         categories: {
           set: selectedCategories.map(c => ({ id: c.id }))
-        }
+        },
+        workPhotos: {
+          deleteMany: {},
+          create: workPhotos.map((photoUrl) => ({ photoUrl })),
+        },
       }
     });
     revalidatePath("/", "layout");
@@ -188,6 +196,8 @@ export async function adminRegisterWorker(formData: FormData) {
   const experienceYears = parseInt(formData.get("experience") as string) || 0;
   const whatsappPhone = (formData.get("whatsappPhone") as string) || phone;
   const bio = (formData.get("bio") as string) || null;
+  const profilePhotoUrl = sanitizeImageUrl(formData.get("profilePhotoUrl") as string | null);
+  const workPhotos = sanitizeWorkPhotos(formData.getAll("workPhotos"));
 
   if (!/^[789]\d{9}$/.test(phone)) {
     return { success: false, error: "Invalid phone number. It must be 10 digits and start with 7, 8, or 9." };
@@ -211,10 +221,14 @@ export async function adminRegisterWorker(formData: FormData) {
         phone,
         whatsappPhone,
         bio,
+        profilePhotoUrl,
         slug: `${fullName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now()}`,
         categories: {
           connect: selectedCategories.map(c => ({ id: c.id }))
         },
+        workPhotos: workPhotos.length
+          ? { create: workPhotos.map((photoUrl) => ({ photoUrl })) }
+          : undefined,
         localityId,
         experienceYears,
         status: "APPROVED",
@@ -243,6 +257,8 @@ export async function registerWorker(formData: FormData) {
   const experienceYears = parseInt(formData.get("experience") as string) || 0;
   const whatsappPhone = (formData.get("whatsappPhone") as string) || phone;
   const bio = (formData.get("bio") as string) || null;
+  const profilePhotoUrl = sanitizeImageUrl(formData.get("profilePhotoUrl") as string | null);
+  const workPhotos = sanitizeWorkPhotos(formData.getAll("workPhotos"));
 
   if (!/^[789]\d{9}$/.test(phone)) {
     throw new Error("Invalid phone number. It must be 10 digits and start with 7, 8, or 9.");
@@ -270,10 +286,14 @@ export async function registerWorker(formData: FormData) {
         phone,
         whatsappPhone,
         bio,
+        profilePhotoUrl,
         slug: `${fullName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now()}`,
         categories: {
           connect: selectedCategories.map(c => ({ id: c.id }))
         },
+        workPhotos: workPhotos.length
+          ? { create: workPhotos.map((photoUrl) => ({ photoUrl })) }
+          : undefined,
         localityId,
         experienceYears,
         status: "PENDING",
@@ -341,6 +361,9 @@ export async function getWorkerBySlug(slug: string) {
       categories: true,
       skills: {
         include: { skill: true }
+      },
+      workPhotos: {
+        orderBy: { createdAt: "asc" }
       }
     }
   });
@@ -355,6 +378,9 @@ export async function getWorker(id: string) {
       categories: true,
       skills: {
         include: { skill: true }
+      },
+      workPhotos: {
+        orderBy: { createdAt: "asc" }
       }
     }
   });

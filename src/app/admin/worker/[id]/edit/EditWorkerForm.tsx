@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { updateWorkerAdmin } from "@/app/actions/worker";
 import { useRouter } from "next/navigation";
+import { ProfilePhotoField, WorkPhotosField } from "@/components/ImageUpload";
 import {
   ALL_SIRCILLA_NAME_EN,
   ALL_SIRCILLA_NAME_TE,
@@ -158,6 +159,11 @@ export default function EditWorkerForm({ worker, categories, localities }: { wor
           className="w-full bg-[#F7F7F7] border border-[#EBEBEB] px-3.5 py-2.5 rounded-xl text-sm text-[#222222] placeholder:text-[#B0B0B0] focus:outline-none focus:bg-white focus:border-[#222222] transition resize-none" 
         ></textarea>
       </div>
+
+      <ProfilePhotoField initialUrl={worker.profilePhotoUrl} />
+      <WorkPhotosField
+        initialUrls={worker.workPhotos?.map((wp: any) => wp.photoUrl) || []}
+      />
 
       {/* Actions */}
       <div className="pt-4 border-t border-[#EBEBEB] flex justify-end items-center gap-3">

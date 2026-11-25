@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { isAllSircillaLocality } from "@/lib/locality";
 
@@ -6,6 +7,7 @@ export interface WorkerCardData {
   slug: string;
   fullName: string;
   fullNameTelugu?: string | null;
+  profilePhotoUrl?: string | null;
   mobileVerified: boolean;
   experienceYears: number;
   locality?: {
@@ -27,9 +29,20 @@ export default function WorkerCard({ worker, showCategories = false }: WorkerCar
     <Link href={`/worker/${worker.slug}`} className="block group">
       <div className="bg-white border border-[#EBEBEB] hover:border-[#FF385C]/40 p-4 rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 active:scale-[0.99] transition-all flex items-start gap-3.5">
         {/* Worker Avatar */}
-        <div className="w-14 h-14 bg-gradient-to-br from-[#FFF1F3] to-[#FFE4E8] text-[#FF385C] rounded-full flex items-center justify-center font-bold text-xl shrink-0 border border-[#FFCCD5] shadow-xs">
-          {worker.fullName.charAt(0).toUpperCase()}
-        </div>
+        {worker.profilePhotoUrl ? (
+          <Image
+            src={worker.profilePhotoUrl}
+            alt={worker.fullName}
+            width={56}
+            height={56}
+            unoptimized
+            className="w-14 h-14 rounded-full object-cover shrink-0 border border-[#FFCCD5] shadow-xs"
+          />
+        ) : (
+          <div className="w-14 h-14 bg-gradient-to-br from-[#FFF1F3] to-[#FFE4E8] text-[#FF385C] rounded-full flex items-center justify-center font-bold text-xl shrink-0 border border-[#FFCCD5] shadow-xs">
+            {worker.fullName.charAt(0).toUpperCase()}
+          </div>
+        )}
 
         {/* Worker Details */}
         <div className="flex-1 min-w-0">

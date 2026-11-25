@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { adminRegisterWorker } from "@/app/actions/worker";
+import { ProfilePhotoField, WorkPhotosField } from "@/components/ImageUpload";
 import {
   ALL_SIRCILLA_NAME_EN,
   ALL_SIRCILLA_NAME_TE,
@@ -241,6 +242,9 @@ export default function AdminAddWorkerForm({ categories, localities }: { categor
           className="w-full bg-[#F7F7F7] border border-[#EBEBEB] px-3.5 py-2.5 rounded-xl text-sm text-[#222222] placeholder:text-[#B0B0B0] focus:outline-none focus:bg-white focus:border-[#222222] transition"
         ></textarea>
       </div>
+
+      <ProfilePhotoField />
+      <WorkPhotosField />
 
       <button 
         type="submit" 

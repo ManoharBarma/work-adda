@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getWorkerBySlug } from "@/app/actions/worker";
@@ -105,9 +106,20 @@ export default async function WorkerProfilePage({
           <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#FF385C] via-[#FF5A5F] to-[#E00B41]" />
 
           {/* Large Avatar */}
-          <div className="w-24 h-24 bg-gradient-to-br from-[#FFF1F3] to-[#FFE4E8] text-[#FF385C] rounded-full flex items-center justify-center font-bold text-3xl mx-auto mb-3 border-2 border-[#FFCCD5] shadow-sm">
-            {data.fullName.charAt(0).toUpperCase()}
-          </div>
+          {data.profilePhotoUrl ? (
+            <Image
+              src={data.profilePhotoUrl}
+              alt={data.fullName}
+              width={96}
+              height={96}
+              unoptimized
+              className="w-24 h-24 rounded-full object-cover mx-auto mb-3 border-2 border-[#FFCCD5] shadow-sm"
+            />
+          ) : (
+            <div className="w-24 h-24 bg-gradient-to-br from-[#FFF1F3] to-[#FFE4E8] text-[#FF385C] rounded-full flex items-center justify-center font-bold text-3xl mx-auto mb-3 border-2 border-[#FFCCD5] shadow-sm">
+              {data.fullName.charAt(0).toUpperCase()}
+            </div>
+          )}
 
           <div className="flex items-center justify-center gap-1.5 mb-1">
             <h2 className="text-2xl font-bold text-[#222222] tracking-tight">{data.fullName}</h2>
@@ -176,6 +188,33 @@ export default async function WorkerProfilePage({
                 >
                   {skill}
                 </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Work Gallery Section */}
+        {data.workPhotos && data.workPhotos.length > 0 && (
+          <div className="bg-white rounded-2xl border border-[#EBEBEB] p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-base">🖼️</span>
+              <h3 className="text-base font-bold text-[#222222]">Work Photos (పని ఫోటోలు)</h3>
+            </div>
+            <div className="grid grid-cols-3 gap-2.5">
+              {data.workPhotos.map((photo, index) => (
+                <div
+                  key={photo.id}
+                  className="aspect-square rounded-xl overflow-hidden border border-[#EBEBEB] bg-[#F7F7F7]"
+                >
+                  <Image
+                    src={photo.photoUrl}
+                    alt={`${data.fullName} work sample ${index + 1}`}
+                    width={240}
+                    height={240}
+                    unoptimized
+                    className="w-full h-full object-cover"
+                  />
+                </div>
               ))}
             </div>
           </div>
