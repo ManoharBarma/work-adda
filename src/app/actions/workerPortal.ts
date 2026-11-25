@@ -5,9 +5,11 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import {
   clearWorkerSession,
+  createWorkerMagicToken,
   getWorkerSessionId,
   setWorkerSession,
 } from "@/lib/workerSession";
+import { requireAdmin } from "@/lib/adminAuth";
 import { resolveLocalityId } from "@/lib/resolveLocality";
 import { sanitizeImageUrl, sanitizeWorkPhotos } from "@/lib/imageValidation";
 import { composeWorkerBio } from "@/lib/workerBio";
@@ -247,6 +249,27 @@ export async function toggleOwnVisibility() {
 
   revalidatePath("/", "layout");
   return { success: true, status: nextStatus };
+}
+
+export async function generateWorkerEditLink(workerId: string) {
+  requireAdmin();
+
+  const worker = await prisma.worker.findUnique({
+    where: { id: workerId },
+    select: { id: true, fullName: true, phone: true, whatsappPhone: true },
+  });
+
+  if (!worker) {
+    return { success: false, error: "Worker not found." };
+  }
+
+  const token = createWorkerMagicToken(worker.id);
+  return {
+    success: true,
+    path: `/api/worker/magic-login?token=${encodeURIComponent(token)}`,
+    workerName: worker.fullName,
+    phone: worker.whatsappPhone || worker.phone,
+  };
 }
 
 export async function logoutWorker() {

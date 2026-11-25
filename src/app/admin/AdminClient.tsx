@@ -2,6 +2,7 @@
 
 import { useTransition, useState, useMemo } from "react";
 import { approveWorker, rejectWorker, deleteWorker } from "@/app/actions/worker";
+import { generateWorkerEditLink } from "@/app/actions/workerPortal";
 import Link from "next/link";
 
 export default function AdminClient({ initialWorkers, metrics }: { initialWorkers: any[], metrics: any }) {
@@ -13,6 +14,13 @@ export default function AdminClient({ initialWorkers, metrics }: { initialWorker
   // Filter States
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
+
+  // Magic Edit Link Modal State
+  const [editLinkModal, setEditLinkModal] = useState<{
+    workerName: string;
+    phone: string;
+    url: string;
+  } | null>(null);
 
   const showMessage = (msg: string) => {
     setMessage(msg);
@@ -50,6 +58,22 @@ export default function AdminClient({ initialWorkers, metrics }: { initialWorker
         setActiveCount((prev: number) => Math.max(0, prev - 1));
       }
       showMessage(`🗑️ Deleted ${name}.`);
+    });
+  };
+
+  const handleGenerateEditLink = (id: string) => {
+    startTransition(async () => {
+      const res = await generateWorkerEditLink(id);
+      if (res.success && res.path) {
+        const fullUrl = `${window.location.origin}${res.path}`;
+        setEditLinkModal({
+          workerName: res.workerName || "Worker",
+          phone: res.phone || "",
+          url: fullUrl,
+        });
+      } else {
+        showMessage(`⚠️ ${res.error || "Could not generate edit link."}`);
+      }
     });
   };
 
@@ -321,6 +345,15 @@ export default function AdminClient({ initialWorkers, metrics }: { initialWorker
                             Revoke
                           </button>
                         )}
+                        <button
+                          type="button"
+                          onClick={() => handleGenerateEditLink(worker.id)}
+                          disabled={isPending}
+                          className="bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 px-3 py-1.5 rounded-full text-xs font-semibold transition disabled:opacity-50"
+                          title="Generate 7-day self-edit link"
+                        >
+                          Edit Link
+                        </button>
                         <Link
                           href={`/admin/worker/${worker.id}/edit`}
                           className="inline-block bg-[#F7F7F7] hover:bg-[#EBEBEB] text-[#222222] border border-[#EBEBEB] px-3 py-1.5 rounded-full text-xs font-semibold transition"
@@ -343,6 +376,73 @@ export default function AdminClient({ initialWorkers, metrics }: { initialWorker
           </div>
         </div>
       </div>
+
+      {/* Magic Edit Link Modal */}
+      {editLinkModal && (
+        <div
+          className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4"
+          onClick={() => setEditLinkModal(null)}
+        >
+          <div
+            className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-[#EBEBEB] space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h3 className="text-base font-bold text-[#222222]">
+                  1-Tap Worker Edit Link
+                </h3>
+                <p className="text-xs text-[#717171] mt-0.5">
+                  For <span className="font-semibold text-[#222222]">{editLinkModal.workerName}</span> • Valid for 7 days
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditLinkModal(null)}
+                className="w-8 h-8 rounded-full border border-[#EBEBEB] flex items-center justify-center text-[#717171] hover:text-[#222222]"
+                aria-label="Close"
+              >
+                ✕
+              </button>
+            </div>
+
+            <input
+              type="text"
+              readOnly
+              value={editLinkModal.url}
+              onClick={(e) => (e.target as HTMLInputElement).select()}
+              className="w-full bg-[#F7F7F7] border border-[#EBEBEB] rounded-xl px-3.5 py-2.5 text-xs font-mono text-[#484848] focus:outline-none"
+            />
+
+            <div className="flex gap-2.5">
+              <button
+                type="button"
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(editLinkModal.url);
+                    showMessage("✅ Edit link copied to clipboard!");
+                  } catch {
+                    showMessage("⚠️ Select and copy the link manually.");
+                  }
+                }}
+                className="flex-1 bg-[#222222] hover:bg-black text-white py-2.5 rounded-full text-xs font-semibold transition"
+              >
+                Copy Link
+              </button>
+              <a
+                href={`https://wa.me/91${editLinkModal.phone.replace(/\D/g, "").slice(-10)}?text=${encodeURIComponent(
+                  `Hi ${editLinkModal.workerName}, tap this link to update your Work Adda Sircilla profile, photos, or availability (valid 7 days): ${editLinkModal.url}`
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 bg-[#25D366] hover:bg-[#20BA5A] text-white py-2.5 rounded-full text-xs font-semibold text-center transition"
+              >
+                Send on WhatsApp
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -9,10 +9,14 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Manage Worker Profile | Work Adda Sircilla",
   description:
-    "Log in with your registered mobile number to update your Work Adda profile, photos, rates, or availability.",
+    "Update your Work Adda profile, photos, starting rates, or availability.",
 };
 
-export default async function ManagePage() {
+export default async function ManagePage({
+  searchParams,
+}: {
+  searchParams: { error?: string };
+}) {
   const [worker, localities] = await Promise.all([
     getLoggedInWorker(),
     getLocalities(),
@@ -20,6 +24,10 @@ export default async function ManagePage() {
 
   const safeWorker = worker ? JSON.parse(JSON.stringify(worker)) : null;
   const safeLocalities = JSON.parse(JSON.stringify(localities));
+  const smsOtpEnabled =
+    Boolean(process.env.FAST2SMS_API_KEY) || process.env.NODE_ENV !== "production";
+  const supportWhatsapp = process.env.NEXT_PUBLIC_SUPPORT_WHATSAPP || "";
+  const expiredError = searchParams?.error === "expired";
 
   return (
     <main className="min-h-screen bg-[#F7F7F7] pb-16">
@@ -41,7 +49,13 @@ export default async function ManagePage() {
         </div>
       </div>
 
-      <ManageClient initialWorker={safeWorker} localities={safeLocalities} />
+      <ManageClient
+        initialWorker={safeWorker}
+        localities={safeLocalities}
+        smsOtpEnabled={smsOtpEnabled}
+        supportWhatsapp={supportWhatsapp}
+        expiredError={expiredError}
+      />
     </main>
   );
 }

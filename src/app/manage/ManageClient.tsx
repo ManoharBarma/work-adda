@@ -25,9 +25,18 @@ interface ManageClientProps {
   initialWorker: any | null;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   localities: any[];
+  smsOtpEnabled: boolean;
+  supportWhatsapp: string;
+  expiredError?: boolean;
 }
 
-export default function ManageClient({ initialWorker, localities }: ManageClientProps) {
+export default function ManageClient({
+  initialWorker,
+  localities,
+  smsOtpEnabled,
+  supportWhatsapp,
+  expiredError = false,
+}: ManageClientProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -37,6 +46,7 @@ export default function ManageClient({ initialWorker, localities }: ManageClient
   const [otp, setOtp] = useState("");
   const [devOtpHint, setDevOtpHint] = useState<string | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [copiedRequest, setCopiedRequest] = useState(false);
 
   // Dashboard state
   const [worker, setWorker] = useState(initialWorker);
@@ -118,6 +128,12 @@ export default function ManageClient({ initialWorker, localities }: ManageClient
   };
 
   if (!worker) {
+    const cleanPhone = phone.replace(/\D/g, "").slice(-10);
+    const cleanSupport = supportWhatsapp.replace(/\D/g, "").slice(-10);
+    const requestText = cleanPhone
+      ? `Hi Work Adda Admin, please send my profile edit link for +91 ${cleanPhone}.`
+      : "Hi Work Adda Admin, please send my profile edit link.";
+
     return (
       <div className="max-w-md mx-auto px-4 mt-8">
         <div className="bg-white border border-[#EBEBEB] rounded-2xl p-6 shadow-[0_2px_12px_rgba(0,0,0,0.06)] space-y-5">
@@ -129,9 +145,17 @@ export default function ManageClient({ initialWorker, localities }: ManageClient
               Manage Your Worker Profile
             </h2>
             <p className="text-xs text-[#717171] mt-1">
-              మీ ప్రొఫైల్‌ను మార్చడానికి మొబైల్ నంబర్‌తో లాగిన్ అవ్వండి
+              {smsOtpEnabled
+                ? "మీ ప్రొఫైల్‌ను మార్చడానికి మొబైల్ నంబర్‌తో లాగిన్ అవ్వండి"
+                : "మీ ప్రొఫైల్‌ను మార్చడానికి అడ్మిన్ నుండి ఎడిట్ లింక్ పొందండి"}
             </p>
           </div>
+
+          {expiredError && (
+            <div className="bg-amber-50 text-amber-800 border border-amber-200 rounded-xl p-3 text-xs font-semibold">
+              ⚠️ This edit link is invalid or has expired. Please request a fresh link below.
+            </div>
+          )}
 
           {authError && (
             <div className="bg-[#FFF1F3] text-[#FF385C] border border-[#FFCCD5] rounded-xl p-3 text-xs font-semibold">
@@ -145,7 +169,60 @@ export default function ManageClient({ initialWorker, localities }: ManageClient
             </div>
           )}
 
-          {step === "PHONE" ? (
+          {!smsOtpEnabled ? (
+            <div className="space-y-4">
+              <div className="bg-[#F7F7F7] border border-[#EBEBEB] rounded-xl p-3.5 text-xs text-[#484848] leading-relaxed">
+                Open the <strong>1-tap edit link</strong> sent by Work Adda Admin on WhatsApp to update your photos, starting rate, or pause availability — 100% free, no password needed.
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-[#222222] mb-1.5">
+                  Your Registered Mobile Number (మీ మొబైల్ నంబర్)
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3.5 top-3.5 text-xs font-bold text-[#717171]">
+                    +91
+                  </span>
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="10-digit mobile number"
+                    className="w-full border border-[#EBEBEB] rounded-xl pl-12 pr-4 py-3 text-sm text-[#222222] placeholder-[#B0B0B0] focus:outline-none focus:ring-2 focus:ring-[#FF385C]/20 focus:border-[#FF385C]"
+                  />
+                </div>
+              </div>
+
+              {cleanSupport ? (
+                <a
+                  href={`https://wa.me/91${cleanSupport}?text=${encodeURIComponent(requestText)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full bg-[#25D366] hover:bg-[#20BA5A] text-white py-3.5 rounded-full font-bold text-sm text-center shadow transition active:scale-95"
+                >
+                  Request Edit Link on WhatsApp
+                </a>
+              ) : (
+                <button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(requestText);
+                      setCopiedRequest(true);
+                      setTimeout(() => setCopiedRequest(false), 2500);
+                    } catch {
+                      // Ignore clipboard errors
+                    }
+                  }}
+                  className="w-full bg-[#222222] hover:bg-black text-white py-3.5 rounded-full font-bold text-sm shadow transition active:scale-95"
+                >
+                  {copiedRequest
+                    ? "✓ Copied! Send on WhatsApp to Admin"
+                    : "Copy Edit Link Request Message"}
+                </button>
+              )}
+            </div>
+          ) : step === "PHONE" ? (
             <form onSubmit={handleRequestOtp} className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-[#222222] mb-1.5">
