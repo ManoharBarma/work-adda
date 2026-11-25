@@ -140,15 +140,14 @@ export default function RegisterForm({ categories, localities }: { categories: a
 
           <div>
             <label className="block text-xs font-bold text-[#222222] mb-1.5">
-              Telugu Name (తెలుగులో పేరు) <span className="text-[#FF385C]">*</span>
+              Telugu Name (తెలుగులో పేరు) <span className="text-xs font-normal text-[#717171]">(Optional)</span>
             </label>
             <input 
               name="fullNameTelugu" 
-              required 
               type="text" 
               value={fullNameTelugu}
               onChange={(e) => setFullNameTelugu(e.target.value)}
-              placeholder="ex: రాజు (Auto-suggests from English)" 
+              placeholder="ex: రాజు (Auto-suggests or leave blank)" 
               className="w-full border border-[#EBEBEB] rounded-xl px-4 py-3 text-sm text-[#222222] placeholder-[#B0B0B0] focus:outline-none focus:ring-2 focus:ring-[#FF385C]/20 focus:border-[#FF385C] bg-[#F7F7F7] transition-all" 
             />
           </div>

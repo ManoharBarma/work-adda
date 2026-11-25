@@ -149,7 +149,7 @@ export async function createLocality(formData: FormData) {
 // Admin: Register and auto-approve a new worker
 export async function adminRegisterWorker(formData: FormData) {
   const fullName = formData.get("fullName") as string;
-  const fullNameTelugu = formData.get("fullNameTelugu") as string;
+  const fullNameTelugu = (formData.get("fullNameTelugu") as string)?.trim() || null;
   const phone = formData.get("phone") as string;
   const categorySlugs = formData.getAll("category") as string[]; 
   let localityId = formData.get("locality") as string;
@@ -211,8 +211,8 @@ export async function adminRegisterWorker(formData: FormData) {
 
 // Public: Register a new worker
 export async function registerWorker(formData: FormData) {
-  const fullName = formData.get("fullName") as string;
-  const fullNameTelugu = formData.get("fullNameTelugu") as string;
+  const fullName = (formData.get("fullName") as string)?.trim();
+  const fullNameTelugu = (formData.get("fullNameTelugu") as string)?.trim() || null;
   const phone = formData.get("phone") as string;
   const categorySlugs = formData.getAll("category") as string[]; // Can be multiple now
   let localityId = formData.get("locality") as string;
@@ -226,12 +226,16 @@ export async function registerWorker(formData: FormData) {
   const profilePhotoUrl = sanitizeImageUrl(formData.get("profilePhotoUrl") as string | null);
   const workPhotos = sanitizeWorkPhotos(formData.getAll("workPhotos"));
 
+  if (!fullName) {
+    return { success: false, error: "Full name is required." };
+  }
+
   if (!/^[789]\d{9}$/.test(phone)) {
-    throw new Error("Invalid phone number. It must be 10 digits and start with 7, 8, or 9.");
+    return { success: false, error: "Invalid phone number. It must be 10 digits and start with 7, 8, or 9." };
   }
 
   if (!categorySlugs || categorySlugs.length === 0) {
-    throw new Error("Please select at least one category.");
+    return { success: false, error: "Please select at least one category." };
   }
 
   // Find categories by slugs
@@ -239,7 +243,9 @@ export async function registerWorker(formData: FormData) {
     where: { slug: { in: categorySlugs } },
   });
 
-  if (selectedCategories.length === 0) throw new Error("Categories not found");
+  if (selectedCategories.length === 0) {
+    return { success: false, error: "Selected categories were not found." };
+  }
 
   try {
     localityId = await resolveLocalityId(localityId, customLocality, customLocalityTelugu);
@@ -390,7 +396,7 @@ export async function getAnalyticsMetrics() {
     views24h, views7d, views30d,
     calls24h, calls7d, calls30d,
     wa24h, wa7d, wa30d,
-    totalCalls, totalWa
+    totalViews, totalCalls, totalWa
   ] = await Promise.all([
     prisma.workerInteraction.count({ where: { type: "VIEW", createdAt: { gte: dayAgo } } }),
     prisma.workerInteraction.count({ where: { type: "VIEW", createdAt: { gte: weekAgo } } }),
@@ -404,12 +410,14 @@ export async function getAnalyticsMetrics() {
     prisma.workerInteraction.count({ where: { type: "WHATSAPP", createdAt: { gte: weekAgo } } }),
     prisma.workerInteraction.count({ where: { type: "WHATSAPP", createdAt: { gte: monthAgo } } }),
 
+    prisma.workerInteraction.count({ where: { type: "VIEW" } }),
     prisma.workerInteraction.count({ where: { type: "CALL" } }),
     prisma.workerInteraction.count({ where: { type: "WHATSAPP" } })
   ]);
 
   return {
     active: activeWorkers,
+    views: totalViews,
     clicks: totalWa,
     calls: totalCalls,
     timeStats: {

@@ -29,18 +29,26 @@ export default function AdminClient({ initialWorkers, metrics }: { initialWorker
   };
 
   const handleReject = (id: string, name: string) => {
+    const wasApproved = workers.find(w => w.id === id)?.status === "APPROVED";
     startTransition(async () => {
       await rejectWorker(id);
       setWorkers((prev: any[]) => prev.map(w => w.id === id ? { ...w, status: "REJECTED" } : w));
+      if (wasApproved) {
+        setActiveCount((prev: number) => Math.max(0, prev - 1));
+      }
       showMessage(`❌ Rejected ${name}.`);
     });
   };
 
   const handleDelete = (id: string, name: string) => {
     if (!confirm(`Are you sure you want to permanently delete ${name}?`)) return;
+    const wasApproved = workers.find(w => w.id === id)?.status === "APPROVED";
     startTransition(async () => {
       await deleteWorker(id);
       setWorkers((prev: any[]) => prev.filter(w => w.id !== id));
+      if (wasApproved) {
+        setActiveCount((prev: number) => Math.max(0, prev - 1));
+      }
       showMessage(`🗑️ Deleted ${name}.`);
     });
   };
@@ -169,6 +177,7 @@ export default function AdminClient({ initialWorkers, metrics }: { initialWorker
               <option value="ALL">All Statuses</option>
               <option value="APPROVED">Approved Only</option>
               <option value="PENDING">Pending Only</option>
+              <option value="INACTIVE">Paused (Inactive)</option>
               <option value="REJECTED">Rejected</option>
             </select>
           </div>
@@ -214,9 +223,9 @@ export default function AdminClient({ initialWorkers, metrics }: { initialWorker
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-full bg-[#F7F7F7] border border-[#EBEBEB] flex items-center justify-center font-bold text-[#FF385C] text-sm shrink-0 overflow-hidden shadow-inner">
-                            {worker.photoUrl ? (
+                            {worker.profilePhotoUrl ? (
                               // eslint-disable-next-line @next/next/no-img-element
-                              <img src={worker.photoUrl} alt={worker.fullName} className="w-full h-full object-cover" />
+                              <img src={worker.profilePhotoUrl} alt={worker.fullName} className="w-full h-full object-cover" />
                             ) : (
                               worker.fullName?.charAt(0) || "W"
                             )}
@@ -257,11 +266,13 @@ export default function AdminClient({ initialWorkers, metrics }: { initialWorker
                         <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${
                           worker.status === 'APPROVED' ? 'bg-[#ECFDF5] text-[#008A05] border border-[#A7F3D0]' :
                           worker.status === 'PENDING' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
+                          worker.status === 'INACTIVE' ? 'bg-slate-100 text-slate-700 border border-slate-200' :
                           'bg-red-50 text-red-700 border border-red-200'
                         }`}>
                           <span className={`w-1.5 h-1.5 rounded-full ${
                             worker.status === 'APPROVED' ? 'bg-[#008A05]' :
-                            worker.status === 'PENDING' ? 'bg-amber-500' : 'bg-red-500'
+                            worker.status === 'PENDING' ? 'bg-amber-500' :
+                            worker.status === 'INACTIVE' ? 'bg-slate-500' : 'bg-red-500'
                           }`} />
                           {worker.status}
                         </span>

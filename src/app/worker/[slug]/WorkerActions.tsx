@@ -80,13 +80,22 @@ export function WorkerShareButton({
   );
 }
 
-export default function WorkerActions({ workerId, phone, whatsappPhone }: Pick<WorkerActionsProps, "workerId" | "phone" | "whatsappPhone">) {
+export default function WorkerActions({
+  workerId,
+  workerName,
+  category,
+  phone,
+  whatsappPhone,
+}: Pick<WorkerActionsProps, "workerId" | "workerName" | "category" | "phone" | "whatsappPhone">) {
   useEffect(() => {
     sendTrackBeacon(workerId, "VIEW");
   }, [workerId]);
 
   const cleanCallPhone = phone.replace(/\D/g, "").slice(-10);
   const cleanWaPhone = (whatsappPhone || phone).replace(/\D/g, "").slice(-10);
+  const waMessage = encodeURIComponent(
+    `Hi ${workerName}, I found your ${category ? `${category} ` : ""}profile on Work Adda Sircilla. Are you available for work?`
+  );
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-[#EBEBEB] p-3 px-4 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] z-40">
@@ -108,7 +117,7 @@ export default function WorkerActions({ workerId, phone, whatsappPhone }: Pick<W
 
         {/* WhatsApp Button */}
         <a
-          href={`https://wa.me/91${cleanWaPhone}`}
+          href={`https://wa.me/91${cleanWaPhone}?text=${waMessage}`}
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => sendTrackBeacon(workerId, "WHATSAPP")}

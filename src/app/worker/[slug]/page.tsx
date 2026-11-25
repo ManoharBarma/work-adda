@@ -251,6 +251,8 @@ export default async function WorkerProfilePage({
       {/* Floating Action Buttons & View Tracking */}
       <WorkerActions
         workerId={data.id}
+        workerName={data.fullName}
+        category={categoryNames}
         phone={data.phone}
         whatsappPhone={data.whatsappPhone}
       />
