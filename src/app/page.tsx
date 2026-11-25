@@ -2,7 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import Image from "next/image";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export default async function Home() {
   const categories = await prisma.category.findMany({
