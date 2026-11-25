@@ -1,23 +1,38 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { createCategory } from "@/app/actions/worker";
 
 export default function CategoryClient({ initialCategories }: { initialCategories: any[] }) {
-  const [categories] = useState(initialCategories);
+  const router = useRouter();
+  const [categories, setCategories] = useState(initialCategories);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<{ text: string, type: "success" | "error" } | null>(null);
+
+  useEffect(() => {
+    setCategories(initialCategories);
+  }, [initialCategories]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
     setMessage(null);
 
-    const formData = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const formData = new FormData(form);
     try {
-      await createCategory(formData);
-      setMessage({ text: "Category added successfully!", type: "success" });
-      (e.target as HTMLFormElement).reset();
+      const res = await createCategory(formData);
+      if (res?.success === false) {
+        setMessage({ text: res.error || "Failed to create category", type: "error" });
+      } else {
+        if (res?.category) {
+          setCategories((prev) => [...prev, res.category]);
+        }
+        setMessage({ text: "Category added successfully!", type: "success" });
+        form.reset();
+        router.refresh();
+      }
     } catch (err: any) {
       setMessage({ text: err.message || "Failed to create category", type: "error" });
     } finally {

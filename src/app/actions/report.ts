@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { ReportReason } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/lib/adminAuth";
 
 const VALID_REASONS = new Set<string>(Object.values(ReportReason));
 
@@ -39,6 +40,7 @@ export async function submitWorkerReport(input: {
 }
 
 export async function getReportsForAdmin() {
+  requireAdmin();
   return await prisma.report.findMany({
     include: {
       worker: {
@@ -56,6 +58,7 @@ export async function getReportsForAdmin() {
 }
 
 export async function setReportResolved(reportId: string, resolved: boolean) {
+  requireAdmin();
   await prisma.report.update({
     where: { id: reportId },
     data: { resolved },

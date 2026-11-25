@@ -97,6 +97,13 @@ export default function WorkerActions({
   whatsappPhone,
 }: Pick<WorkerActionsProps, "workerId" | "workerName" | "phone" | "whatsappPhone">) {
   useEffect(() => {
+    const viewKey = `workadda_viewed_${workerId}`;
+    try {
+      if (window.sessionStorage.getItem(viewKey)) return;
+      window.sessionStorage.setItem(viewKey, "1");
+    } catch {
+      // Ignore sessionStorage restrictions
+    }
     sendTrackBeacon(workerId, "VIEW");
   }, [workerId]);
 

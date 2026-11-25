@@ -10,9 +10,11 @@ import {
   sortLocalitiesWithAllSircillaFirst,
 } from "@/lib/locality";
 import { resolveLocalityId } from "@/lib/resolveLocality";
+import { requireAdmin } from "@/lib/adminAuth";
 
 // Admin: Get all workers for the master table
 export async function getAllWorkersForAdmin() {
+  requireAdmin();
   return await prisma.worker.findMany({
     include: {
       categories: true,
@@ -24,6 +26,7 @@ export async function getAllWorkersForAdmin() {
 
 // Admin: Delete a worker entirely
 export async function deleteWorker(id: string) {
+  requireAdmin();
   await prisma.worker.delete({
     where: { id }
   });
@@ -32,6 +35,7 @@ export async function deleteWorker(id: string) {
 
 // Admin: Approve a worker
 export async function approveWorker(id: string) {
+  requireAdmin();
   await prisma.worker.update({
     where: { id },
     data: { 
@@ -44,6 +48,7 @@ export async function approveWorker(id: string) {
 
 // Admin: Reject a worker
 export async function rejectWorker(id: string) {
+  requireAdmin();
   await prisma.worker.update({
     where: { id },
     data: { status: "REJECTED" },
@@ -53,6 +58,7 @@ export async function rejectWorker(id: string) {
 
 // Admin: Update worker details
 export async function updateWorkerAdmin(id: string, formData: FormData) {
+  requireAdmin();
   const fullName = formData.get("fullName") as string;
   const phone = formData.get("phone") as string;
   const experienceYears = parseInt(formData.get("experience") as string) || 0;
@@ -113,24 +119,41 @@ export async function getCategories() {
 
 // Admin: Create a new category
 export async function createCategory(formData: FormData) {
-  const nameEnglish = formData.get("nameEnglish") as string;
-  const nameTelugu = formData.get("nameTelugu") as string;
-  const icon = formData.get("icon") as string;
-  
-  if (!nameEnglish || !nameTelugu || !icon) throw new Error("Missing required fields");
-  
-  const slug = nameEnglish.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-  
-  await prisma.category.create({
-    data: { nameEnglish, nameTelugu, icon, slug }
-  });
-  
-  revalidatePath("/");
-  return { success: true };
+  requireAdmin();
+  const nameEnglish = (formData.get("nameEnglish") as string)?.trim();
+  const nameTelugu = (formData.get("nameTelugu") as string)?.trim();
+  const icon = (formData.get("icon") as string)?.trim();
+
+  if (!nameEnglish || !nameTelugu || !icon) {
+    return { success: false, error: "Missing required fields." };
+  }
+
+  const slug = nameEnglish
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+
+  if (!slug) {
+    return { success: false, error: "Category name must include English letters or numbers." };
+  }
+
+  try {
+    const category = await prisma.category.create({
+      data: { nameEnglish, nameTelugu, icon, slug },
+    });
+    revalidatePath("/", "layout");
+    return { success: true, category };
+  } catch (error: any) {
+    if (error.code === "P2002") {
+      return { success: false, error: "A category with this name already exists." };
+    }
+    return { success: false, error: "Failed to create category." };
+  }
 }
 
 // Admin: Create a new locality
 export async function createLocality(formData: FormData) {
+  requireAdmin();
   const nameEnglish = formData.get("nameEnglish") as string;
   const nameTelugu = formData.get("nameTelugu") as string;
   const town = (formData.get("town") as string) || "Sircilla";
@@ -142,12 +165,13 @@ export async function createLocality(formData: FormData) {
     data: { nameEnglish, nameTelugu, town, district }
   });
   
-  revalidatePath("/");
+  revalidatePath("/", "layout");
   return { success: true };
 }
 
 // Admin: Register and auto-approve a new worker
 export async function adminRegisterWorker(formData: FormData) {
+  requireAdmin();
   const fullName = formData.get("fullName") as string;
   const fullNameTelugu = (formData.get("fullNameTelugu") as string)?.trim() || null;
   const phone = formData.get("phone") as string;
@@ -360,6 +384,7 @@ export async function getWorkerBySlug(slug: string) {
 
 // Admin: Get single worker by ID
 export async function getWorker(id: string) {
+  requireAdmin();
   return await prisma.worker.findUnique({
     where: { id },
     include: {
@@ -385,6 +410,7 @@ export async function getLocalities() {
 
 // Admin: Get Analytics Metrics
 export async function getAnalyticsMetrics() {
+  requireAdmin();
   const activeWorkers = await prisma.worker.count({ where: { status: "APPROVED" } });
   
   const now = new Date();
