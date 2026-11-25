@@ -66,6 +66,16 @@ export default function AdminLayout({
             <span>Localities</span>
           </Link>
 
+          <Link
+            href="/admin/reports"
+            className="flex items-center gap-3 px-3.5 py-2.5 text-sm font-semibold rounded-xl text-[#222222] hover:bg-[#F7F7F7] transition active:scale-[0.98]"
+          >
+            <span className="w-8 h-8 rounded-lg bg-[#F7F7F7] text-[#222222] flex items-center justify-center text-sm border border-[#EBEBEB]">
+              🚩
+            </span>
+            <span>Reports</span>
+          </Link>
+
           <div className="pt-4 border-t border-[#EBEBEB] my-2"></div>
 
           <Link
@@ -128,6 +138,9 @@ export default function AdminLayout({
         </Link>
         <Link href="/admin/localities" className="px-3 py-1.5 rounded-full bg-[#F7F7F7] text-[#484848] font-medium shrink-0">
           📍 Localities
+        </Link>
+        <Link href="/admin/reports" className="px-3 py-1.5 rounded-full bg-[#F7F7F7] text-[#484848] font-medium shrink-0">
+          🚩 Reports
         </Link>
       </div>
 

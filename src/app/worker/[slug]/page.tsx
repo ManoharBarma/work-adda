@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getWorkerBySlug } from "@/app/actions/worker";
 import { isAllSircillaLocality } from "@/lib/locality";
 import WorkerActions, { WorkerShareButton } from "./WorkerActions";
+import ReportWorkerButton from "./ReportWorkerButton";
 
 export const dynamic = "force-dynamic";
 
@@ -190,6 +191,9 @@ export default async function WorkerProfilePage({
             </p>
           </div>
         </div>
+
+        {/* Report Profile Issue */}
+        <ReportWorkerButton workerId={data.id} workerName={data.fullName} />
       </div>
 
       {/* Floating Action Buttons & View Tracking */}
