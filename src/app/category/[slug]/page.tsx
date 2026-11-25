@@ -1,9 +1,30 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getApprovedWorkersByCategory, getLocalities } from "@/app/actions/worker";
 import LocalityFilter from "./LocalityFilter";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}): Promise<Metadata> {
+  const category = await prisma.category.findUnique({
+    where: { slug: params.slug },
+  });
+
+  const nameEn = category?.nameEnglish || params.slug.replace(/-/g, " ");
+  const title = `${nameEn} in Sircilla | Work Adda`;
+  const description = `Find verified ${nameEn.toLowerCase()} workers in Sircilla (${category?.nameTelugu || "సిరిసిల్ల"}). Browse experience, locality, and call or WhatsApp directly with zero commission.`;
+
+  return {
+    title,
+    description,
+    openGraph: { title, description },
+  };
+}
 
 export default async function CategoryPage({ 
   params,

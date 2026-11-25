@@ -1,7 +1,25 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: { q?: string };
+}): Promise<Metadata> {
+  const query = searchParams.q?.trim();
+  const title = query
+    ? `Search "${query}" in Sircilla | Work Adda`
+    : "Search Local Workers in Sircilla | Work Adda";
+  return {
+    title,
+    description: query
+      ? `Browse local workers matching "${query}" in Sircilla on Work Adda.`
+      : "Search electricians, plumbers, painters, and skilled workers in Sircilla.",
+  };
+}
 
 export default async function SearchPage({
   searchParams,
