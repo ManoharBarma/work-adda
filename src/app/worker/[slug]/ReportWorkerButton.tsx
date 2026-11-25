@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect, useRef } from "react";
 import { submitWorkerReport } from "@/app/actions/report";
 
 const REPORT_REASONS = [
@@ -21,11 +21,41 @@ export default function ReportWorkerButton({
   workerName: string;
 }) {
   const [open, setOpen] = useState(false);
+  const [closing, setClosing] = useState(false);
   const [reason, setReason] = useState<string>("WRONG_PHONE");
   const [details, setDetails] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const sheetRef = useRef<HTMLDivElement>(null);
+
+  // Prevent body scroll when open
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [open]);
+
+  const handleOpen = () => {
+    setClosing(false);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setClosing(true);
+    setTimeout(() => {
+      setOpen(false);
+      setClosing(false);
+      if (submitted) {
+        setSubmitted(false);
+        setDetails("");
+        setReason("WRONG_PHONE");
+      }
+    }, 220);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,21 +74,12 @@ export default function ReportWorkerButton({
     });
   };
 
-  const handleClose = () => {
-    setOpen(false);
-    if (submitted) {
-      setSubmitted(false);
-      setDetails("");
-      setReason("WRONG_PHONE");
-    }
-  };
-
   return (
     <>
       <div className="text-center pt-1">
         <button
           type="button"
-          onClick={() => setOpen(true)}
+          onClick={handleOpen}
           className="inline-flex items-center gap-1.5 text-xs font-medium text-[#717171] hover:text-[#FF385C] underline underline-offset-4 transition-colors py-1.5 px-3"
         >
           <span>🚩</span>
@@ -68,18 +89,26 @@ export default function ReportWorkerButton({
 
       {open && (
         <div
-          className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
-          onClick={handleClose}
+          className={`fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4
+            ${closing ? "animate-backdrop-out" : "animate-backdrop-in"}`}
+          style={{ backgroundColor: "rgba(0,0,0,0.5)", backdropFilter: "blur(2px)" }}
+          onMouseDown={(e) => { if (e.target === e.currentTarget) handleClose(); }}
         >
           <div
-            className="bg-white w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl border border-[#EBEBEB] max-h-[90vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
+            ref={sheetRef}
+            className={`bg-white w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl border border-[#EBEBEB] max-h-[90vh] overflow-y-auto
+              ${closing
+                ? "sm:animate-modal-out animate-sheet-out"
+                : "sm:animate-modal-in animate-sheet-in"
+              }`}
+            onMouseDown={(e) => e.stopPropagation()}
           >
+            {/* Drag handle (mobile) */}
+            <div className="w-10 h-1 bg-[#EBEBEB] rounded-full mx-auto mb-4 sm:hidden" />
+
             <div className="flex items-start justify-between gap-3 mb-4">
               <div>
-                <h3 className="text-base font-bold text-[#222222]">
-                  Report Profile Issue
-                </h3>
+                <h3 className="text-base font-bold text-[#222222]">Report Profile Issue</h3>
                 <p className="text-xs text-[#717171] mt-0.5">
                   Reporting <span className="font-semibold text-[#222222]">{workerName}</span> • ప్రొఫైల్ సమస్య
                 </p>
@@ -87,7 +116,7 @@ export default function ReportWorkerButton({
               <button
                 type="button"
                 onClick={handleClose}
-                className="w-8 h-8 rounded-full border border-[#EBEBEB] flex items-center justify-center text-[#717171] hover:text-[#222222] hover:bg-[#F7F7F7]"
+                className="w-8 h-8 rounded-full border border-[#EBEBEB] flex items-center justify-center text-[#717171] hover:text-[#222222] hover:bg-[#F7F7F7] transition-colors"
                 aria-label="Close"
               >
                 ✕
@@ -99,9 +128,7 @@ export default function ReportWorkerButton({
                 <div className="w-12 h-12 rounded-full bg-[#ECFDF5] text-[#008A05] border border-[#A7F3D0] flex items-center justify-center text-xl mx-auto">
                   ✓
                 </div>
-                <h4 className="text-sm font-bold text-[#222222]">
-                  Thank you! Report submitted.
-                </h4>
+                <h4 className="text-sm font-bold text-[#222222]">Thank you! Report submitted.</h4>
                 <p className="text-xs text-[#717171] leading-relaxed">
                   Our local team will verify and update this profile shortly. (మీ నివేదికకు ధన్యవాదాలు.)
                 </p>
@@ -120,7 +147,6 @@ export default function ReportWorkerButton({
                     ⚠️ {error}
                   </div>
                 )}
-
                 <div className="space-y-2">
                   <label className="block text-xs font-bold text-[#222222]">
                     What is the issue? <span className="text-[#FF385C]">*</span>
@@ -143,12 +169,8 @@ export default function ReportWorkerButton({
                         className="mt-0.5 accent-[#FF385C]"
                       />
                       <div>
-                        <span className="block text-xs font-semibold text-[#222222]">
-                          {item.labelEn}
-                        </span>
-                        <span className="block text-[11px] text-[#717171]">
-                          {item.labelTe}
-                        </span>
+                        <span className="block text-xs font-semibold text-[#222222]">{item.labelEn}</span>
+                        <span className="block text-[11px] text-[#717171]">{item.labelTe}</span>
                       </div>
                     </label>
                   ))}

@@ -21,6 +21,15 @@ export default function AdminClient({ initialWorkers, metrics }: { initialWorker
     phone: string;
     url: string;
   } | null>(null);
+  const [editLinkClosing, setEditLinkClosing] = useState(false);
+
+  const closeEditLinkModal = () => {
+    setEditLinkClosing(true);
+    setTimeout(() => {
+      setEditLinkModal(null);
+      setEditLinkClosing(false);
+    }, 180);
+  };
 
   const showMessage = (msg: string) => {
     setMessage(msg);
@@ -66,6 +75,7 @@ export default function AdminClient({ initialWorkers, metrics }: { initialWorker
       const res = await generateWorkerEditLink(id);
       if (res.success && res.path) {
         const fullUrl = `${window.location.origin}${res.path}`;
+        setEditLinkClosing(false);
         setEditLinkModal({
           workerName: res.workerName || "Worker",
           phone: res.phone || "",
@@ -380,12 +390,18 @@ export default function AdminClient({ initialWorkers, metrics }: { initialWorker
       {/* Magic Edit Link Modal */}
       {editLinkModal && (
         <div
-          className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4"
-          onClick={() => setEditLinkModal(null)}
+          className={`fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 ${
+            editLinkClosing ? "animate-backdrop-out" : "animate-backdrop-in"
+          }`}
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) closeEditLinkModal();
+          }}
         >
           <div
-            className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-[#EBEBEB] space-y-4"
-            onClick={(e) => e.stopPropagation()}
+            className={`bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-[#EBEBEB] space-y-4 ${
+              editLinkClosing ? "animate-modal-out" : "animate-modal-in"
+            }`}
+            onMouseDown={(e) => e.stopPropagation()}
           >
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -398,8 +414,8 @@ export default function AdminClient({ initialWorkers, metrics }: { initialWorker
               </div>
               <button
                 type="button"
-                onClick={() => setEditLinkModal(null)}
-                className="w-8 h-8 rounded-full border border-[#EBEBEB] flex items-center justify-center text-[#717171] hover:text-[#222222]"
+                onClick={closeEditLinkModal}
+                className="w-8 h-8 rounded-full border border-[#EBEBEB] flex items-center justify-center text-[#717171] hover:text-[#222222] transition-colors"
                 aria-label="Close"
               >
                 ✕

@@ -124,8 +124,14 @@ export default async function SearchPage({
             </div>
           )}
 
-          {workers.map((worker) => (
-            <WorkerCard key={worker.id} worker={worker} showCategories />
+          {workers.map((worker, index) => (
+            <div
+              key={worker.id}
+              className="animate-slide-up"
+              style={{ animationDelay: `${Math.min(index * 55, 400)}ms` }}
+            >
+              <WorkerCard worker={worker} showCategories />
+            </div>
           ))}
         </div>
       </div>
