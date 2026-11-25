@@ -149,6 +149,12 @@ export default async function Home() {
           >
             Register as Worker — 100% Free
           </Link>
+          <Link
+            href="/manage"
+            className="inline-block mt-3 text-xs font-semibold text-[#484848] hover:text-[#FF385C] underline underline-offset-4 transition-colors"
+          >
+            Already registered? Manage or edit your profile →
+          </Link>
         </div>
       </div>
 

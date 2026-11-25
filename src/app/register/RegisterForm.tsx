@@ -304,6 +304,12 @@ export default function RegisterForm({ categories, localities }: { categories: a
             <p className="text-center text-[11px] text-[#717171] mt-3 leading-relaxed">
               By registering, you agree to receive direct calls and WhatsApp inquiries from local customers.
             </p>
+            <p className="text-center text-xs text-[#717171] mt-3 pt-3 border-t border-[#EBEBEB]">
+              Already registered?{" "}
+              <Link href="/manage" className="font-bold text-[#FF385C] hover:underline">
+                Manage your profile →
+              </Link>
+            </p>
           </div>
         </form>
       </div>
