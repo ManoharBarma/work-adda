@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { isAllSircillaLocality } from "@/lib/locality";
 
 export interface WorkerCardData {
   id: string;
@@ -73,16 +74,24 @@ export default function WorkerCard({ worker, showCategories = false }: WorkerCar
 
           {worker.locality && (
             <p className="text-xs text-[#717171] flex items-center gap-1 mt-2">
-              <svg className="w-3.5 h-3.5 text-[#FF385C] shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              <span className="truncate">
-                {worker.locality.nameEnglish} ({worker.locality.nameTelugu})
-              </span>
+              {isAllSircillaLocality(worker.locality) ? (
+                <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-full text-[11px] font-semibold">
+                  🌐 Serves {worker.locality.nameEnglish} ({worker.locality.nameTelugu})
+                </span>
+              ) : (
+                <>
+                  <svg className="w-3.5 h-3.5 text-[#FF385C] shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      fillRule="evenodd"
+                      d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <span className="truncate">
+                    {worker.locality.nameEnglish} ({worker.locality.nameTelugu})
+                  </span>
+                </>
+              )}
             </p>
           )}
         </div>

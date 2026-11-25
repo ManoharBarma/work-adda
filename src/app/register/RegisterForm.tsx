@@ -3,6 +3,12 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { registerWorker } from "@/app/actions/worker";
+import {
+  ALL_SIRCILLA_NAME_EN,
+  ALL_SIRCILLA_NAME_TE,
+  ALL_SIRCILLA_SENTINEL,
+  isAllSircillaLocality,
+} from "@/lib/locality";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function RegisterForm({ categories, localities }: { categories: any[], localities: any[] }) {
@@ -18,6 +24,7 @@ export default function RegisterForm({ categories, localities }: { categories: a
   const [customLocalityTelugu, setCustomLocalityTelugu] = useState("");
 
   const isOtherLocality = localities.find(l => l.id === selectedLocalityId)?.nameEnglish === "Other (Not Listed)";
+  const hasAllSircilla = localities.some(isAllSircillaLocality);
 
   const handleNameBlur = async (text: string, setter: (val: string) => void) => {
     if (!text.trim()) return;
@@ -208,8 +215,15 @@ export default function RegisterForm({ categories, localities }: { categories: a
               className="w-full border border-[#EBEBEB] rounded-xl px-4 py-3 text-sm text-[#222222] focus:outline-none focus:ring-2 focus:ring-[#FF385C]/20 focus:border-[#FF385C] bg-white transition-all cursor-pointer"
             >
               <option value="">Select your area...</option>
+              {!hasAllSircilla && (
+                <option value={ALL_SIRCILLA_SENTINEL}>
+                  🌐 {ALL_SIRCILLA_NAME_EN} ({ALL_SIRCILLA_NAME_TE})
+                </option>
+              )}
               {localities.map(l => (
-                <option key={l.id} value={l.id}>{l.nameEnglish} ({l.nameTelugu})</option>
+                <option key={l.id} value={l.id}>
+                  {isAllSircillaLocality(l) ? `🌐 ${l.nameEnglish} (${l.nameTelugu})` : `${l.nameEnglish} (${l.nameTelugu})`}
+                </option>
               ))}
             </select>
           </div>

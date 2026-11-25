@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getWorkerBySlug } from "@/app/actions/worker";
+import { isAllSircillaLocality } from "@/lib/locality";
 import WorkerActions, { WorkerShareButton } from "./WorkerActions";
 
 export const dynamic = "force-dynamic";
@@ -141,7 +142,7 @@ export default async function WorkerProfilePage({
                 className="text-xs font-bold text-[#222222] truncate block"
                 title={`${data.locality.nameEnglish} (${data.locality.nameTelugu})`}
               >
-                {data.locality.nameEnglish}
+                {isAllSircillaLocality(data.locality) ? `🌐 ${data.locality.nameEnglish}` : data.locality.nameEnglish}
               </span>
               <span className="text-[10px] text-[#717171] block truncate">
                 {data.locality.nameTelugu}

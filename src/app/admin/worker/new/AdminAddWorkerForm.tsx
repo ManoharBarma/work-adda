@@ -3,6 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { adminRegisterWorker } from "@/app/actions/worker";
+import {
+  ALL_SIRCILLA_NAME_EN,
+  ALL_SIRCILLA_NAME_TE,
+  ALL_SIRCILLA_SENTINEL,
+  isAllSircillaLocality,
+} from "@/lib/locality";
 
 export default function AdminAddWorkerForm({ categories, localities }: { categories: any[], localities: any[] }) {
   const router = useRouter();
@@ -17,6 +23,7 @@ export default function AdminAddWorkerForm({ categories, localities }: { categor
   const [customLocalityTelugu, setCustomLocalityTelugu] = useState("");
 
   const isOtherLocality = localities.find(l => l.id === selectedLocalityId)?.nameEnglish === "Other (Not Listed)";
+  const hasAllSircilla = localities.some(isAllSircillaLocality);
 
   const handleNameBlur = async (text: string, setter: (val: string) => void) => {
     if (!text.trim()) return;
@@ -164,8 +171,15 @@ export default function AdminAddWorkerForm({ categories, localities }: { categor
             className="w-full bg-[#F7F7F7] border border-[#EBEBEB] px-3.5 py-2.5 rounded-xl text-sm text-[#222222] focus:outline-none focus:bg-white focus:border-[#222222] transition cursor-pointer"
           >
             <option value="">Select Locality...</option>
+            {!hasAllSircilla && (
+              <option value={ALL_SIRCILLA_SENTINEL}>
+                🌐 {ALL_SIRCILLA_NAME_EN} ({ALL_SIRCILLA_NAME_TE})
+              </option>
+            )}
             {localities.map(loc => (
-              <option key={loc.id} value={loc.id}>{loc.nameEnglish} ({loc.nameTelugu})</option>
+              <option key={loc.id} value={loc.id}>
+                {isAllSircillaLocality(loc) ? `🌐 ${loc.nameEnglish} (${loc.nameTelugu})` : `${loc.nameEnglish} (${loc.nameTelugu})`}
+              </option>
             ))}
           </select>
         </div>

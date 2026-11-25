@@ -3,6 +3,12 @@
 import { useState, useTransition } from "react";
 import { updateWorkerAdmin } from "@/app/actions/worker";
 import { useRouter } from "next/navigation";
+import {
+  ALL_SIRCILLA_NAME_EN,
+  ALL_SIRCILLA_NAME_TE,
+  ALL_SIRCILLA_SENTINEL,
+  isAllSircillaLocality,
+} from "@/lib/locality";
 
 export default function EditWorkerForm({ worker, categories, localities }: { worker: any, categories: any[], localities: any[] }) {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -114,8 +120,15 @@ export default function EditWorkerForm({ worker, categories, localities }: { wor
             defaultValue={worker.localityId}
             className="w-full bg-[#F7F7F7] border border-[#EBEBEB] px-3.5 py-2.5 rounded-xl text-sm text-[#222222] focus:outline-none focus:bg-white focus:border-[#222222] transition cursor-pointer"
           >
+            {!localities.some(isAllSircillaLocality) && (
+              <option value={ALL_SIRCILLA_SENTINEL}>
+                🌐 {ALL_SIRCILLA_NAME_EN} ({ALL_SIRCILLA_NAME_TE})
+              </option>
+            )}
             {localities.map(l => (
-              <option key={l.id} value={l.id}>{l.nameEnglish} ({l.nameTelugu})</option>
+              <option key={l.id} value={l.id}>
+                {isAllSircillaLocality(l) ? `🌐 ${l.nameEnglish} (${l.nameTelugu})` : `${l.nameEnglish} (${l.nameTelugu})`}
+              </option>
             ))}
           </select>
         </div>

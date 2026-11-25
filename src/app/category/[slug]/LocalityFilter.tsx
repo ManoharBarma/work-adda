@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import { isAllSircillaLocality } from "@/lib/locality";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function LocalityFilter({ localities }: { localities: any[] }) {
@@ -28,7 +29,9 @@ export default function LocalityFilter({ localities }: { localities: any[] }) {
           <option value="">📍 Any Locality in Sircilla (ఏదైనా ప్రాంతం)</option>
           {localities.map(loc => (
             <option key={loc.id} value={loc.id}>
-              {loc.nameEnglish} ({loc.nameTelugu})
+              {isAllSircillaLocality(loc)
+                ? `🌐 ${loc.nameEnglish} (${loc.nameTelugu})`
+                : `${loc.nameEnglish} (${loc.nameTelugu})`}
             </option>
           ))}
         </select>

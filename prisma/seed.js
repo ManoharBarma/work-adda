@@ -14,6 +14,7 @@ async function main() {
 
   // 1. Create Sircilla Localities
   const localityData = [
+    { nameEnglish: 'All Sircilla', nameTelugu: 'సిరిసిల్ల అంతటా' },
     { nameEnglish: 'Gandhi Nagar', nameTelugu: 'గాంధీ నగర్' },
     { nameEnglish: 'Vidya Nagar', nameTelugu: 'విద్యా నగర్' },
     { nameEnglish: 'Ramnagar', nameTelugu: 'రాంనగర్' },

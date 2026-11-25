@@ -2,6 +2,53 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import {
+  ALL_SIRCILLA_NAME_EN,
+  ALL_SIRCILLA_NAME_TE,
+  ALL_SIRCILLA_SENTINEL,
+  isAllSircillaLocality,
+  sortLocalitiesWithAllSircillaFirst,
+} from "@/lib/locality";
+
+async function resolveLocalityId(
+  localityId: string,
+  customLocality?: string | null,
+  customLocalityTelugu?: string | null
+): Promise<string> {
+  if (localityId === ALL_SIRCILLA_SENTINEL) {
+    let allLoc = await prisma.locality.findFirst({
+      where: { nameEnglish: { equals: ALL_SIRCILLA_NAME_EN, mode: "insensitive" } },
+    });
+    if (!allLoc) {
+      allLoc = await prisma.locality.create({
+        data: {
+          nameEnglish: ALL_SIRCILLA_NAME_EN,
+          nameTelugu: ALL_SIRCILLA_NAME_TE,
+          town: "Sircilla",
+          district: "Rajanna Sircilla",
+        },
+      });
+    }
+    return allLoc.id;
+  }
+
+  if (customLocality && customLocalityTelugu) {
+    let newLoc = await prisma.locality.findFirst({ where: { nameEnglish: customLocality } });
+    if (!newLoc) {
+      newLoc = await prisma.locality.create({
+        data: {
+          nameEnglish: customLocality,
+          nameTelugu: customLocalityTelugu,
+          town: "Sircilla",
+          district: "Rajanna Sircilla",
+        },
+      });
+    }
+    return newLoc.id;
+  }
+
+  return localityId;
+}
 
 // Admin: Get all workers for the master table
 export async function getAllWorkersForAdmin() {
@@ -48,7 +95,7 @@ export async function updateWorkerAdmin(id: string, formData: FormData) {
   const fullName = formData.get("fullName") as string;
   const phone = formData.get("phone") as string;
   const experienceYears = parseInt(formData.get("experience") as string) || 0;
-  const localityId = formData.get("locality") as string;
+  const rawLocalityId = formData.get("locality") as string;
   const categorySlugs = formData.getAll("category") as string[];
   const whatsappPhone = (formData.get("whatsappPhone") as string) || phone;
   const bio = (formData.get("bio") as string) || null;
@@ -62,6 +109,7 @@ export async function updateWorkerAdmin(id: string, formData: FormData) {
   });
 
   try {
+    const localityId = await resolveLocalityId(rawLocalityId);
     await prisma.worker.update({
       where: { id },
       data: {
@@ -154,21 +202,7 @@ export async function adminRegisterWorker(formData: FormData) {
   });
 
   try {
-    // Handle Custom Locality creation
-    if (customLocality && customLocalityTelugu) {
-      let newLoc = await prisma.locality.findFirst({ where: { nameEnglish: customLocality } });
-      if (!newLoc) {
-        newLoc = await prisma.locality.create({
-          data: {
-            nameEnglish: customLocality,
-            nameTelugu: customLocalityTelugu,
-            town: "Sircilla",
-            district: "Rajanna Sircilla"
-          }
-        });
-      }
-      localityId = newLoc.id;
-    }
+    localityId = await resolveLocalityId(localityId, customLocality, customLocalityTelugu);
 
     const worker = await prisma.worker.create({
       data: {
@@ -226,22 +260,7 @@ export async function registerWorker(formData: FormData) {
   if (selectedCategories.length === 0) throw new Error("Categories not found");
 
   try {
-    // Handle Custom Locality creation
-    if (customLocality && customLocalityTelugu) {
-      // Find exact match first to prevent duplicates
-      let newLoc = await prisma.locality.findFirst({ where: { nameEnglish: customLocality } });
-      if (!newLoc) {
-        newLoc = await prisma.locality.create({
-          data: {
-            nameEnglish: customLocality,
-            nameTelugu: customLocalityTelugu,
-            town: "Sircilla",
-            district: "Rajanna Sircilla"
-          }
-        });
-      }
-      localityId = newLoc.id;
-    }
+    localityId = await resolveLocalityId(localityId, customLocality, customLocalityTelugu);
 
     // Create worker
     const worker = await prisma.worker.create({
@@ -281,22 +300,35 @@ export async function getApprovedWorkersByCategory(categorySlug: string, localit
 
   if (!category) return [];
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const whereClause: any = {
     categories: { some: { id: category.id } },
-    status: "APPROVED"
+    status: "APPROVED",
   };
 
   if (localityId) {
-    whereClause.localityId = localityId;
+    whereClause.OR = [
+      { localityId },
+      { locality: { nameEnglish: { equals: ALL_SIRCILLA_NAME_EN, mode: "insensitive" } } },
+    ];
   }
 
-  return await prisma.worker.findMany({
+  const workers = await prisma.worker.findMany({
     where: whereClause,
     include: {
       locality: true,
       categories: true,
     },
-    orderBy: { profileViews: "desc" }
+    orderBy: { profileViews: "desc" },
+  });
+
+  if (!localityId) return workers;
+
+  // Show exact locality matches first, followed by workers serving All Sircilla
+  return workers.sort((a, b) => {
+    const aExact = a.localityId === localityId ? 0 : isAllSircillaLocality(a.locality) ? 1 : 2;
+    const bExact = b.localityId === localityId ? 0 : isAllSircillaLocality(b.locality) ? 1 : 2;
+    return aExact - bExact;
   });
 }
 
@@ -330,9 +362,10 @@ export async function getWorker(id: string) {
 
 // Public: Get all localities for the dropdown
 export async function getLocalities() {
-  return await prisma.locality.findMany({
-    orderBy: { nameEnglish: "asc" }
+  const localities = await prisma.locality.findMany({
+    orderBy: { nameEnglish: "asc" },
   });
+  return sortLocalitiesWithAllSircillaFirst(localities);
 }
 
 // Admin: Get Analytics Metrics

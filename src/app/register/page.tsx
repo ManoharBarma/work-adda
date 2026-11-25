@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
+import { getLocalities } from "@/app/actions/worker";
 import RegisterForm from "./RegisterForm";
 
 export const dynamic = "force-dynamic";
@@ -16,9 +17,7 @@ export default async function RegisterPage() {
     orderBy: { displayOrder: "asc" },
   });
 
-  const localities = await prisma.locality.findMany({
-    orderBy: { nameEnglish: "asc" },
-  });
+  const localities = await getLocalities();
 
   return <RegisterForm categories={categories} localities={localities} />;
 }
